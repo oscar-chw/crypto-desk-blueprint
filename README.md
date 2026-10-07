@@ -4,8 +4,10 @@
 A template for building a crypto trading system from scratch, whether you are a person or an AI agent. It
 gives you: a defined interface for each stage of the system, tested building blocks, acceptance tests that
 each have a deliberately broken version they must catch, a scaffold for adding new parts, and short docs
-that say why each rule exists. A real example built from it is a separate repo,
-[crypto-trading-pipeline](https://github.com/oscar-chw/crypto-trading-pipeline).
+that say why each rule exists. A worked example is a separate repo,
+[crypto-trading-pipeline](https://github.com/oscar-chw/crypto-trading-pipeline): a hackathon trading bot written
+before this template and adapted to it afterwards; its data, feature, strategy and execution stages pass the
+conformance tests, and its risk and sizing stages do not yet.
 
 Where in the code: contracts in [`pipeline/protocols.py`](pipeline/protocols.py), building blocks in
 [`pipeline/`](pipeline), acceptance tests in [`conformance/`](conformance), the reasoning in
@@ -134,7 +136,7 @@ scripts/       new_stage.py scaffold, check.sh, demo.sh, run_experiments.py, fet
   it claims under that process, not that the effect has the same size on a live market.
 - The public-data experiments use one year (2025) of Binance hourly data for two coins, plus BTC daily
   closes since 2018; the funding-basis band uses assumed borrow and lend rates.
-- EXP-02-1's measurement was revised after review on 2026-10-08 because the original control was biased (see git history).
+- EXP-02-1's measurement was revised after review on 2026-10-08 because the original control was biased; its verdict changed from "does not support" to "supports" (see git history).
 - Some experiments do not support their rule as specified; they are kept and named under Results.
 - The toy strategy is a placeholder; this repo makes no claim that any strategy makes money.
 - Only a paper venue exists; a live exchange adapter is not included.
