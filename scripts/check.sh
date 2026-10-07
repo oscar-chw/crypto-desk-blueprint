@@ -2,7 +2,7 @@
 # Exit 0 only if ruff (E9,F) is clean AND pytest passes AND pytest collected at least one test.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-PY="${PY:-python}"
+source scripts/env.sh
 "$PY" -m ruff check --select E9,F pipeline conformance tests scripts
 out="$("$PY" -m pytest -q 2>&1)" || { echo "$out"; echo "check: pytest failed"; exit 1; }
 echo "$out" | tail -3
