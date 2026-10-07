@@ -24,14 +24,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-from sklearn.ensemble import RandomForestClassifier  # noqa: E402
-from sklearn.model_selection import KFold  # noqa: E402
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import KFold
 
-from experiments._common import main, mean_se, synthetic, verdict  # noqa: E402
-from pipeline.cv import PurgedKFold  # noqa: E402
-from pipeline.types import NS_PER_HOUR  # noqa: E402
+from experiments._common import main, mean_se, synthetic, verdict
+from pipeline.cv import PurgedKFold
+from pipeline.types import NS_PER_HOUR
 
 META = {
     "id": "EXP-08-1", "backs": "08-validation rule 1",

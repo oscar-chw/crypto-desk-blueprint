@@ -29,11 +29,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
+import numpy as np
+import pandas as pd
 
-from experiments._common import load_csv, main, prop_se, public_data, verdict  # noqa: E402
-from pipeline import pricing  # noqa: E402
+from experiments._common import load_csv, main, prop_se, public_data, verdict
+from pipeline import pricing
 
 META = {
     "id": "EXP-04-1", "backs": "04-pricing rule 3",
@@ -57,16 +57,16 @@ def coin_frame(hourly: pd.DataFrame, coin: str) -> pd.DataFrame:
     t = hourly["close_time_ms"].to_numpy(np.int64) * 1_000_000
     exp = hourly[f"{coin}_quarterly_expiry"].map(expiry_ns).to_numpy(np.int64)
     spot, fut = hourly[f"{coin}_spot"].to_numpy(), hourly[f"{coin}_quarterly"].to_numpy()
-    tau = np.array([pricing.year_fraction(int(a), int(b)) for a, b in zip(t, exp)])
-    basis = np.array([pricing.implied_carry(s, f, x) for s, f, x in zip(spot, fut, tau)])
-    bands = np.array([pricing.no_arbitrage_band(s, x, **RATES) for s, x in zip(spot, tau)])
+    tau = np.array([pricing.year_fraction(int(a), int(b)) for a, b in zip(t, exp, strict=False)])
+    basis = np.array([pricing.implied_carry(s, f, x) for s, f, x in zip(spot, fut, tau, strict=False)])
+    bands = np.array([pricing.no_arbitrage_band(s, x, **RATES) for s, x in zip(spot, tau, strict=False)])
     return pd.DataFrame({"basis": basis, "spot": spot, "fut": fut, "low": bands[:, 0], "high": bands[:, 1]},
                         index=hourly["close_time_ms"].to_numpy())
 
 
 def aligned(hourly: pd.DataFrame, funding: pd.DataFrame, coin: str) -> pd.DataFrame:
     f = funding[funding["symbol"] == f"{coin.upper()}USDT"].set_index("funding_time_ms")
-    ann = pd.Series([pricing.annualize_funding(r, h) for r, h in zip(f["rate"], f["interval_hours"])], index=f.index)
+    ann = pd.Series([pricing.annualize_funding(r, h) for r, h in zip(f["rate"], f["interval_hours"], strict=False)], index=f.index)
     cf = coin_frame(hourly, coin)
     return pd.DataFrame({"funding": ann, "basis": cf["basis"]}).dropna()
 
@@ -81,7 +81,7 @@ def block_boot_se(a: np.ndarray, b: np.ndarray, rng: np.random.Generator, n_boot
 
 
 def passes(aligned: list[float], shifted_p95: list[float]) -> bool:
-    return all(a > c for a, c in zip(aligned, shifted_p95))
+    return all(a > c for a, c in zip(aligned, shifted_p95, strict=False))
 
 
 def run(quick: bool) -> dict:

@@ -17,10 +17,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from experiments._common import main, prop_se, synthetic, verdict  # noqa: E402
-from experiments._tsa import ols_t  # noqa: E402
+from experiments._common import main, prop_se, synthetic, verdict
+from experiments._tsa import ols_t
 
 META = {
     "id": "EXP-02-2", "backs": "02-features rule 3",

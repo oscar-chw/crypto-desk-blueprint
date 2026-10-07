@@ -62,7 +62,7 @@ def _months(y0: int, y1: int):
 
 
 def _expiry_ms(code: str) -> int:
-    d = dt.datetime.strptime(code, "%y%m%d").replace(hour=8, tzinfo=dt.timezone.utc)
+    d = dt.datetime.strptime(code, "%y%m%d").replace(hour=8, tzinfo=dt.UTC)
     return int(d.timestamp() * 1000)
 
 
@@ -78,7 +78,7 @@ def _closes(url_fmt: str, months) -> dict[int, float]:
 
 def fetch_hourly() -> tuple[list[list], list[str]]:
     months = list(_months(YEAR, YEAR))
-    t0 = int(dt.datetime(YEAR, 1, 1, 1, tzinfo=dt.timezone.utc).timestamp() * 1000)
+    t0 = int(dt.datetime(YEAR, 1, 1, 1, tzinfo=dt.UTC).timestamp() * 1000)
     grid = list(range(t0, t0 + 365 * 24 * H_MS, H_MS))
     cols, series = ["close_time_ms"], []
     for c in COINS:
@@ -135,7 +135,7 @@ def main() -> int:
     ]
     manifest = {
         "source": BASE,
-        "fetched_utc": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d"),
+        "fetched_utc": dt.datetime.now(dt.UTC).strftime("%Y-%m-%d"),
         "fetched_by": "scripts/fetch_data.py",
         "notes": (f"Hourly closes for {YEAR} (bar close time, UTC ms). Quarterly column = nearest USD-M "
                   f"quarterly with >= {ROLL_DAYS} days to expiry (expiry 08:00 UTC). Funding = last_funding_rate "

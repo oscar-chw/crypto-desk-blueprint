@@ -25,11 +25,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
+import numpy as np
+import pandas as pd
 
-from experiments._common import main, mean_se, synthetic, verdict  # noqa: E402
-from pipeline.protocols import Feature  # noqa: E402
+from experiments._common import main, mean_se, synthetic, verdict
+from pipeline.protocols import Feature
 
 META = {
     "id": "EXP-02-1", "backs": "02-features rule 1",

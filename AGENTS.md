@@ -74,7 +74,7 @@ Consequences: what this makes harder, and how to undo it
 
 ```
 pip install -e ".[dev]"          # Python 3.11+
-make test                        # ruff (E9,F) + every suite + the mutant check
+make test                        # ruff + mypy + every suite + the mutant check
 make conformance impl=<module>   # stage suites against your implementation
 make mutants                     # proves each conformance test can fail
 ```

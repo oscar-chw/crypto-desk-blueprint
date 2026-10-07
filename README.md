@@ -95,7 +95,7 @@ the first results, so they are not a pre-registration.
 
 ```bash
 pip install -e ".[dev]"            # Python 3.11+ (dev includes the experiment dependencies)
-make test                          # ruff (E9,F) + unit tests + conformance + mutants
+make test                          # ruff + mypy + unit tests + conformance + mutants
 bash scripts/demo.sh               # offline toy: data to execution, prints a short summary
 python scripts/run_experiments.py  # all 20 experiments (a few minutes), rewrites the results tables
 make new-strategy name=X           # scaffold implementations/X, then make it pass its suite

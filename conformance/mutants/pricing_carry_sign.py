@@ -1,5 +1,5 @@
 """Mutant: carry with the rate differential reversed."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from conformance.toy import CarryPricing
 
 KILLED_BY = "test_pricing.py::test_fair_matches_carry"

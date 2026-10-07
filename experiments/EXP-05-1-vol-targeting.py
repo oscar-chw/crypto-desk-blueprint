@@ -22,12 +22,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
+import numpy as np
+import pandas as pd
 
-from conformance import toy  # noqa: E402
-from experiments._common import boot_se, load_csv, mean_se, synthetic, verdict  # noqa: E402
-from experiments._common import main as cli  # noqa: E402
+from conformance import toy
+from experiments._common import boot_se, load_csv, mean_se, synthetic, verdict
+from experiments._common import main as cli
 
 META = {
     "id": "EXP-05-1", "backs": "05-risk rules 1, 2",

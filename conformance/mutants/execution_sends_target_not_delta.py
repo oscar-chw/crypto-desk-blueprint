@@ -1,5 +1,5 @@
 """Mutant: orders the full target quantity, ignoring the current position."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from conformance.toy import DeltaExecutor
 from pipeline.types import OrderIntent
 

@@ -21,9 +21,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from experiments._common import main, mean_se, synthetic, verdict  # noqa: E402
+from experiments._common import main, mean_se, synthetic, verdict
 
 META = {
     "id": "EXP-07-2", "backs": "07-execution rule 5",

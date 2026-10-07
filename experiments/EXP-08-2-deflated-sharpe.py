@@ -18,10 +18,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
+import itertools
 
-from experiments._common import main, prop_se, synthetic, verdict  # noqa: E402
-from pipeline.stats import deflated_sharpe_ratio, probabilistic_sharpe_ratio  # noqa: E402
+import numpy as np
+
+from experiments._common import main, prop_se, synthetic, verdict
+from pipeline.stats import deflated_sharpe_ratio, probabilistic_sharpe_ratio
 
 META = {
     "id": "EXP-08-2", "backs": "08-validation rules 3, 4",
@@ -34,7 +36,7 @@ SEED, T = 82, 250
 
 def passes(raw: list[float], raw_se: list[float], deflated: list[float], reps: int) -> bool:
     """raw/deflated: false-pass rates on the N grid, N = 1 first."""
-    rises = all(a < b for a, b in zip(raw, raw[1:])) and raw[-1] - raw[0] > 2 * np.hypot(raw_se[-1], raw_se[0])
+    rises = all(a < b for a, b in itertools.pairwise(raw)) and raw[-1] - raw[0] > 2 * np.hypot(raw_se[-1], raw_se[0])
     return rises and all(d <= 0.05 + 2 * prop_se(0.05, reps) for d in deflated)
 
 

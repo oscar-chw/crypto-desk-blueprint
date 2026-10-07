@@ -1,5 +1,5 @@
 """Mutant: the source returns one bar past the requested end."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from conformance.toy import SyntheticBars
 from pipeline.types import NS_PER_HOUR
 

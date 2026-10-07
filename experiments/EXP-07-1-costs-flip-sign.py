@@ -26,13 +26,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
+import itertools
 
-from conformance import toy  # noqa: E402
-from experiments._common import load_csv, main, verdict  # noqa: E402
-from pipeline.costs import CostModel  # noqa: E402
-from pipeline.stats import sharpe_ratio  # noqa: E402
+import numpy as np
+import pandas as pd
+
+from conformance import toy
+from experiments._common import load_csv, main, verdict
+from pipeline.costs import CostModel
+from pipeline.stats import sharpe_ratio
 
 META = {
     "id": "EXP-07-1", "backs": "07-execution rule 4",
@@ -59,9 +61,9 @@ def sweep(w: np.ndarray, r: np.ndarray) -> dict:
         out[str(c)] = {"sharpe_hourly": sr, "se": math.sqrt((1 + sr**2 / 2) / len(gross)),
                        "sharpe_annual": sr * math.sqrt(8_760)}
     srs = [out[str(c)]["sharpe_hourly"] for c in COSTS]
-    flip = next((c for c, s in zip(COSTS, srs) if s < 0), None)
+    flip = next((c for c, s in zip(COSTS, srs, strict=False) if s < 0), None)
     return {"by_cost_bps": out, "break_even_bps": float(gross.mean() / turn.mean() * 1e4),
-            "mean_turnover": float(turn.mean()), "falls": bool(all(a > b for a, b in zip(srs, srs[1:]))),
+            "mean_turnover": float(turn.mean()), "falls": bool(all(a > b for a, b in itertools.pairwise(srs))),
             "first_negative_cost_bps": flip, "hours": len(gross)}
 
 

@@ -20,10 +20,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from experiments._common import main, mean_se, synthetic, verdict  # noqa: E402
-from pipeline.pricing import funding_cashflow  # noqa: E402
+from experiments._common import main, mean_se, synthetic, verdict
+from pipeline.pricing import funding_cashflow
 
 META = {
     "id": "EXP-04-2", "backs": "04-pricing rule 4",
@@ -53,7 +53,7 @@ def run(quick: bool) -> dict:
         end = start + h
         # funding k is paid at time k * 8 h for interval (k-1, k]; discrete = payments at k*8 in (start, end]
         k0, k1 = np.floor(start / INTERVAL_H).astype(int) + 1, np.floor(end / INTERVAL_H).astype(int)
-        disc = np.array([sum(funding_cashflow(1.0, 1.0, r[k]) for k in range(a, b + 1)) for a, b in zip(k0, k1)])
+        disc = np.array([sum(funding_cashflow(1.0, 1.0, r[k]) for k in range(a, b + 1)) for a, b in zip(k0, k1, strict=False)])
         cont = np.zeros(n_holds)
         for j in range(n_holds):  # integrate the prevailing rate over the hold
             t = start[j]

@@ -1,7 +1,7 @@
 """Mutant: no guard for missing inputs."""
 import math
 
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from conformance.toy import PlaceholderStrategy
 from pipeline.types import NS_PER_HOUR, Signal
 

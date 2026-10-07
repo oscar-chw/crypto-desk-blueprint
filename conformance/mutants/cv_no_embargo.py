@@ -1,5 +1,5 @@
 """Mutant: purges overlaps but applies no embargo, while claiming one."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from pipeline.cv import PurgedKFold
 from pipeline.types import NS_PER_HOUR
 

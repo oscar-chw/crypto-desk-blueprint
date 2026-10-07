@@ -19,10 +19,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
+import itertools
 
-from experiments._common import main, mean_se, prop_se, synthetic, verdict  # noqa: E402
-from pipeline.types import NS_PER_SECOND, Bar  # noqa: E402
+import numpy as np
+
+from experiments._common import main, mean_se, prop_se, synthetic, verdict
+from pipeline.types import NS_PER_SECOND, Bar
 
 META = {
     "id": "EXP-00-2", "backs": "00-infrastructure rules 1, 3",
@@ -40,7 +42,7 @@ def build_bars(ts_ns: np.ndarray, px: np.ndarray, delay_ns: np.ndarray) -> dict[
     close_t = -(-ts // BAR_NS) * BAR_NS  # bar (close - BAR, close] contains t
     out = {}
     edges = np.flatnonzero(np.diff(close_t)) + 1
-    for seg_t, seg_p in zip(np.split(close_t, edges), np.split(p, edges)):
+    for seg_t, seg_p in zip(np.split(close_t, edges), np.split(p, edges), strict=False):
         c = int(seg_t[0])
         out[c] = Bar("sim:X:spot", c - BAR_NS, c, float(seg_p[0]), float(seg_p.max()), float(seg_p.min()),
                      float(seg_p[-1]), float(len(seg_p)), c + int(delay_ns.max()))
@@ -48,7 +50,7 @@ def build_bars(ts_ns: np.ndarray, px: np.ndarray, delay_ns: np.ndarray) -> dict[
 
 
 def passes(share_real: float, se_real: float, shares_by_tail: list[float]) -> bool:
-    return share_real > 2 * se_real and all(a < b for a, b in zip(shares_by_tail, shares_by_tail[1:]))
+    return share_real > 2 * se_real and all(a < b for a, b in itertools.pairwise(shares_by_tail))
 
 
 def run(quick: bool) -> dict:

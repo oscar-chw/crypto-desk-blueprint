@@ -18,10 +18,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from experiments._common import main, mean_se, synthetic, verdict  # noqa: E402
-from pipeline.types import TargetPortfolio  # noqa: E402
+from experiments._common import main, mean_se, synthetic, verdict
+from pipeline.types import TargetPortfolio
 
 META = {
     "id": "EXP-05-3", "backs": "05-risk rule 7",

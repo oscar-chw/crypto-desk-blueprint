@@ -1,5 +1,5 @@
 """Mutant: the vol forecast reads the whole frame, ignoring t."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from conformance.toy import EwmaVol
 
 KILLED_BY = "test_risk.py::test_forecast_is_point_in_time"

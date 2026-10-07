@@ -1,5 +1,5 @@
 """Mutant: the source repeats its last bar (a retried page appended twice)."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from conformance.toy import SyntheticBars
 
 KILLED_BY = "test_data.py::test_ordered_unique"

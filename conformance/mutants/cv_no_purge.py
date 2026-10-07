@@ -1,7 +1,7 @@
 """Mutant: plain contiguous k-fold, no purge and no embargo."""
 import numpy as np
 
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 
 KILLED_BY = "test_validation.py::test_no_train_test_overlap"
 

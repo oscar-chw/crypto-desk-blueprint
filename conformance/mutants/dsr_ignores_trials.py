@@ -1,5 +1,5 @@
 """Mutant: deflated Sharpe that forgets how many trials were run."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from pipeline.stats import probabilistic_sharpe_ratio
 
 KILLED_BY = "test_validation.py::test_dsr_penalises_trials"

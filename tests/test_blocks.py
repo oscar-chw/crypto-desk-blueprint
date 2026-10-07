@@ -1,4 +1,5 @@
 """Unit tests of the shared building blocks in pipeline/."""
+import itertools
 import math
 
 import numpy as np
@@ -142,7 +143,7 @@ def test_sharpe_and_psr_basics():
 
 def test_expected_max_sharpe_grows_with_trials():
     vals = [expected_max_sharpe(n, 0.01) for n in (1, 10, 100, 1_000)]
-    assert vals[0] == 0 and all(a < b for a, b in zip(vals, vals[1:]))
+    assert vals[0] == 0 and all(a < b for a, b in itertools.pairwise(vals))
 
 
 def test_dsr_flags_best_of_many_noise_strategies():

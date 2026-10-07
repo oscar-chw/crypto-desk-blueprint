@@ -1,5 +1,5 @@
 """Mutant: fills at mid with no fee."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from pipeline.types import Fill
 
 KILLED_BY = "test_execution.py::test_fills_pay_costs"

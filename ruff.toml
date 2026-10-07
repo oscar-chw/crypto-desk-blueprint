@@ -1,3 +1,14 @@
-# Correctness-only lint (syntax errors, pyflakes). Style is not enforced.
+# Correctness plus style: pycodestyle, pyflakes, isort, bugbear, pyupgrade, simplify, ruff-specific.
+line-length = 120
+target-version = "py311"
+
 [lint]
-select = ["E9", "F"]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+
+[lint.per-file-ignores]
+# Result summaries are long f-strings copied verbatim into results JSON and docs; wrapping them risks changing them.
+"experiments/*.py" = ["E501"]
+"scripts/run_experiments.py" = ["E501"]
+"tests/test_experiments.py" = ["E501"]
+# The closures are called inside the same loop iteration that defines them, so late binding cannot bite.
+"experiments/EXP-00-1-one-code-path.py" = ["B023"]

@@ -1,7 +1,7 @@
 """Mutant: advertises a gross cap but never applies it."""
 import math
 
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from conformance.toy import VolScaledPortfolio
 from pipeline.types import TargetPortfolio
 

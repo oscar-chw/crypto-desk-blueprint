@@ -1,5 +1,5 @@
 """Mutant: a fixed volatility that never reacts."""
-from conformance.toy import *  # noqa: F401,F403
+from conformance.toy import *  # noqa: F403
 from pipeline.types import RiskForecast
 
 KILLED_BY = "test_risk.py::test_vol_responds_to_shock"

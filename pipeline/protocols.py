@@ -2,14 +2,24 @@
 passes that stage's suite in conformance/stages/. The blueprint/0N-*.md files say why each rule exists."""
 from __future__ import annotations
 
-from typing import Iterator, Mapping, Protocol, Sequence, runtime_checkable
+from collections.abc import Iterator, Mapping, Sequence
+from typing import Protocol, runtime_checkable
 
 import numpy as np
 import pandas as pd
 
 from pipeline.risk import KillSwitch, RiskDecision
-from pipeline.types import (AccountState, Bar, FairValue, Fill, OrderIntent, RiskForecast, Signal,
-                            TargetPortfolio, UtcNanos)
+from pipeline.types import (
+    AccountState,
+    Bar,
+    FairValue,
+    Fill,
+    OrderIntent,
+    RiskForecast,
+    Signal,
+    TargetPortfolio,
+    UtcNanos,
+)
 
 
 @runtime_checkable

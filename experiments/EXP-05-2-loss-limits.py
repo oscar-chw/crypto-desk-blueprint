@@ -22,11 +22,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from experiments._common import main, synthetic, verdict  # noqa: E402
-from pipeline.risk import RiskEngine, RiskLimits  # noqa: E402
-from pipeline.types import NS_PER_HOUR, TargetPortfolio  # noqa: E402
+from experiments._common import main, synthetic, verdict
+from pipeline.risk import RiskEngine, RiskLimits
+from pipeline.types import NS_PER_HOUR, TargetPortfolio
 
 META = {
     "id": "EXP-05-2", "backs": "05-risk rules 4-6",

@@ -7,8 +7,8 @@ a pause and the same fault trips it again with less capital.
 from __future__ import annotations
 
 import logging
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 from pipeline.types import NS_PER_DAY, TargetPortfolio, UtcNanos
 
@@ -23,7 +23,7 @@ class RiskLimits:
     daily_loss_limit: float = 0.05  # from the UTC day's opening equity; reduce-only until the next day
 
     def __post_init__(self) -> None:
-        if not (0 < self.max_weight and 0 < self.max_gross and 0 < self.max_drawdown < 1
+        if not (self.max_weight > 0 and self.max_gross > 0 and 0 < self.max_drawdown < 1
                 and 0 < self.daily_loss_limit < 1):
             raise ValueError(f"invalid limits {self}")
 

@@ -20,12 +20,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import pandas as pd  # noqa: E402
+import pandas as pd
 
-from conformance import toy  # noqa: E402
-from experiments._common import main, synthetic, verdict  # noqa: E402
-from pipeline.risk import RiskLimits  # noqa: E402
-from pipeline.types import AccountState, bars_to_frame  # noqa: E402
+from conformance import toy
+from experiments._common import main, synthetic, verdict
+from pipeline.risk import RiskLimits
+from pipeline.types import AccountState, bars_to_frame
 
 META = {
     "id": "EXP-00-1", "backs": "00-infrastructure rule 2",

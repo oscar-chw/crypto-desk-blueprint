@@ -18,7 +18,7 @@ def sharpe_ratio(returns: np.ndarray, periods_per_year: float | None = None) -> 
     r = np.asarray(returns, dtype=float)
     if len(r) < 2 or r.std(ddof=1) == 0:
         raise ValueError("need at least two returns with non-zero dispersion")
-    sr = r.mean() / r.std(ddof=1)
+    sr = float(r.mean() / r.std(ddof=1))
     return sr * math.sqrt(periods_per_year) if periods_per_year else sr
 
 

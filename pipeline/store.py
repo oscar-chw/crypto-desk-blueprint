@@ -46,7 +46,7 @@ class PointInTimeStore:
     def append_bar(self, bar: Bar) -> Record:
         return self.append(bar.instrument_id, bar.close_time, bar.available_at, bar)
 
-    def view(self, as_of: UtcNanos) -> "PointInTimeView":
+    def view(self, as_of: UtcNanos) -> PointInTimeView:
         return PointInTimeView(self._rows, int(as_of))
 
 

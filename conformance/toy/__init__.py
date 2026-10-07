@@ -6,7 +6,7 @@ runs end to end; nothing about it is a claim that it makes money.
 from __future__ import annotations
 
 import math
-from typing import Mapping, Sequence
+from collections.abc import Mapping, Sequence
 
 import numpy as np
 import pandas as pd
@@ -18,8 +18,19 @@ from pipeline.cv import PurgedKFold
 from pipeline.risk import RiskEngine, RiskLimits
 from pipeline.stats import deflated_sharpe_ratio
 from pipeline.store import PointInTimeStore
-from pipeline.types import (NS_PER_HOUR, NS_PER_SECOND, AccountState, Bar, FairValue, Fill, OrderIntent,
-                            RiskForecast, Signal, TargetPortfolio, UtcNanos)
+from pipeline.types import (
+    NS_PER_HOUR,
+    NS_PER_SECOND,
+    AccountState,
+    Bar,
+    FairValue,
+    Fill,
+    OrderIntent,
+    RiskForecast,
+    Signal,
+    TargetPortfolio,
+    UtcNanos,
+)
 
 T0 = 1_704_067_200 * NS_PER_SECOND  # 2024-01-01T00:00:00Z
 TOY_ID = "toy:BTCUSDT:spot"
@@ -53,7 +64,8 @@ class Momentum:
         self.lookback = window + 1
 
     def compute(self, bars: pd.DataFrame) -> pd.Series:
-        return np.log(bars["close"]).diff(self.window).rename(self.name)
+        out: pd.Series = np.log(bars["close"]).diff(self.window).rename(self.name)
+        return out
 
 
 class PlaceholderStrategy:
@@ -96,7 +108,7 @@ class EwmaVol:
         if len(past) < 2:
             raise ValueError("need at least two past returns")
         var = (past ** 2).ewm(alpha=1 - self.lam, adjust=False).mean().iloc[-1]
-        return RiskForecast(t, {k: math.sqrt(max(float(v), 1e-16)) for k, v in var.items()},
+        return RiskForecast(t, {str(k): math.sqrt(max(float(v), 1e-16)) for k, v in var.items()},
                             self.periods_per_year)
 
 

@@ -1,4 +1,6 @@
 """Stage 01 acceptance tests: market data source (blueprint/01-data.md)."""
+import itertools
+
 import pytest
 
 pytestmark = pytest.mark.data
@@ -16,7 +18,7 @@ def test_ordered_unique(impl):
     src, inst, start, end = _sample(impl)
     times = [b.close_time for b in src.bars(inst, start, end)]
     assert len(times) > 10
-    assert all(a < b for a, b in zip(times, times[1:]))
+    assert all(a < b for a, b in itertools.pairwise(times))
 
 
 def test_window_respected(impl):

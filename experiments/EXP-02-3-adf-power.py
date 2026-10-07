@@ -19,10 +19,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-import numpy as np  # noqa: E402
+import numpy as np
 
-from experiments._common import main, prop_se, synthetic, verdict  # noqa: E402
-from experiments._tsa import KPSS_5PCT_LEVEL, adf_rejects, kpss_stat, schwert_lags  # noqa: E402
+from experiments._common import main, prop_se, synthetic, verdict
+from experiments._tsa import KPSS_5PCT_LEVEL, adf_rejects, kpss_stat, schwert_lags
 
 META = {
     "id": "EXP-02-3", "backs": "02-features rule 4",
