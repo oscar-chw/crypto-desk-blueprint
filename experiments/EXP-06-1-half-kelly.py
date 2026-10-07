@@ -42,6 +42,10 @@ def path_stats(r: np.ndarray, f: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     return logw[-1] / len(r), dd.max(axis=0)
 
 
+def passes(p95_diffs_and_se: list[tuple[float, float]]) -> bool:
+    return all(d < -2 * se for d, se in p95_diffs_and_se)
+
+
 def run(quick: bool) -> dict:
     paths, n = (500, 250) if quick else (10_000, 1_000)
     rng = np.random.default_rng(SEED)
@@ -61,7 +65,7 @@ def run(quick: bool) -> dict:
                           np.median(g_half[i]) - np.median(g_full[i])))
         sd = np.std(np.array(boots), axis=0, ddof=1)
         d95 = float(np.quantile(dd_half, 0.95) - np.quantile(dd_full, 0.95))
-        ok &= d95 < -2 * sd[0]
+        ok &= passes([(d95, float(sd[0]))])
         treat[name] = {"median_log_growth": float(np.median(g_half)), "max_dd_median": float(np.median(dd_half)),
                        "max_dd_p95": float(np.quantile(dd_half, 0.95)), "mean_leverage": float(np.mean(0.5 * full))}
         ctrl[name] = {"median_log_growth": float(np.median(g_full)), "max_dd_median": float(np.median(dd_full)),

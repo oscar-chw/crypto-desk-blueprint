@@ -58,7 +58,8 @@ def ewma_var(r: np.ndarray) -> np.ndarray:
 
 
 def max_dd(rets: np.ndarray) -> np.ndarray:
-    eq = np.cumprod(1 + rets, axis=0)
+    """Max drawdown, capped at 100%: a period that loses more than the equity is ruin, and equity stays 0."""
+    eq = np.cumprod(np.maximum(1 + rets, 0.0), axis=0)
     return np.max(1 - eq / np.maximum.accumulate(eq, axis=0), axis=0)
 
 
@@ -70,10 +71,14 @@ def book(r: np.ndarray) -> dict:
     for name, w in (("targeted", w_t), ("fixed", w_f)):
         pnl = w * r[1:]
         rv = pd.DataFrame(pnl).rolling(ROLL).std().to_numpy()[ROLL:]
-        out[name] = {"dispersion": np.std(np.log(rv), axis=0, ddof=1), "max_dd": max_dd(pnl),
+        out[name] = {"dispersion": np.std(np.log(rv), axis=0, ddof=1), "max_dd": max_dd(pnl), "ruined": np.any(1 + pnl <= 0, axis=0),
                      "turnover": np.mean(np.abs(np.diff(w, axis=0)), axis=0),
                      "rv_rms_rel_to_target": np.sqrt(np.mean((rv / TARGET - 1) ** 2, axis=0))}
     return out
+
+
+def passes(diff: float, se: float, btc_targeted: float, btc_fixed: float) -> bool:
+    return diff < -2 * se and btc_targeted < btc_fixed
 
 
 def run(quick: bool) -> dict:
@@ -90,12 +95,12 @@ def run(quick: bool) -> dict:
     daily = load_csv(DAILY)
     btc = book(daily["close"].pct_change().dropna().to_numpy()[:, None])
     bt, bf = ({k: float(v[0]) for k, v in btc[a].items()} for a in ("targeted", "fixed"))
-    ok = d_m < -2 * d_se and bt["dispersion"] < bf["dispersion"]
+    ok = passes(d_m, d_se, bt["dispersion"], bf["dispersion"])
 
     def arm(x: dict, b: dict) -> dict:
         return {"synthetic": {"dispersion_log_rv": float(np.mean(x["dispersion"])), "max_dd_p95": q95(x["max_dd"]),
                               "max_dd_p95_se": boot_se(x["max_dd"], lambda v: np.quantile(v, 0.95), rng),
-                              "turnover": float(np.mean(x["turnover"])),
+                              "turnover": float(np.mean(x["turnover"])), "share_ruined": float(np.mean(x["ruined"])),
                               "rv_rms_rel_to_target": float(np.mean(x["rv_rms_rel_to_target"]))},
                 "btc_daily": b}
     return {
@@ -113,7 +118,7 @@ def run(quick: bool) -> dict:
         "summary": (f"vol dispersion {np.mean(t['dispersion']):.2f} vs {np.mean(f['dispersion']):.2f} (synthetic, "
                     f"diff SE {d_se:.3f}), {bt['dispersion']:.2f} vs {bf['dispersion']:.2f} on BTC; p95 max "
                     f"drawdown {q95(t['max_dd']):.0%} vs {q95(f['max_dd']):.0%}; turnover {np.mean(t['turnover']):.3f} "
-                    f"vs 0 per day"),
+                    f"vs 0 per day; paths ruined {np.mean(t['ruined']):.1%} vs {np.mean(f['ruined']):.1%}"),
     }
 
 

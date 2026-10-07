@@ -11,9 +11,12 @@ Costs: pipeline.costs.CostModel with taker fee c bps and no spread or impact, ch
 c in {0, 1, 2, 3, 5, 10, 15, 20}. Control: the zero-cost arm (c = 0).
 Metric: net Sharpe ratio per hour (pipeline.stats.sharpe_ratio; annualised x sqrt(8760) for display),
 SE sqrt((1 + SR^2 / 2) / T) (Lo 2002); break-even cost = gross mean / mean turnover.
-Verdict rule (from blueprint/07-execution.md): supports if net Sharpe falls strictly as c rises in every
-arm and, in the synthetic arm, the zero-cost Sharpe is above 0 by more than 2 SE and turns negative at
-some c <= 20 bps.
+Verdict rule: supports if net Sharpe falls strictly as c rises in every arm and, in the synthetic arm, the
+zero-cost Sharpe is above 0 by more than 2 SE and turns negative at some c <= 20 bps. This is stricter than
+blueprint/07-execution.md, whose only falsification condition is "net Sharpe does not fall as cost rises";
+that condition is a check that the cost is applied and holds by construction whenever turnover > 0, so it
+is reported beside the verdict, not counted as evidence. Context, not verdict: the realised IC of the
+planted synthetic position over seeds 0..199, to show where seed 71 falls in its sampling distribution.
 """
 from __future__ import annotations
 
@@ -68,6 +71,18 @@ def placeholder_positions(close: pd.Series) -> np.ndarray:
     return np.array([strat.signal(toy.TOY_ID, i, {"momentum": float(m)}).score for i, m in enumerate(mom)])
 
 
+def seed_ic(seed: int, n: int) -> float:
+    """Realised IC of the synthetic arm's position for one seed (the same draws run() makes)."""
+    rng = np.random.default_rng(seed)
+    r = rng.normal(0, SIGMA, n)
+    w = planted(rng, r)
+    return float(np.corrcoef(w[:-1], r[1:])[0, 1])
+
+
+def passes(falls: list[bool], sr0: float, se0: float, first_negative_bps: float | None) -> bool:
+    return all(falls) and sr0 > 2 * se0 and first_negative_bps is not None
+
+
 def run(quick: bool) -> dict:
     rng = np.random.default_rng(SEED)
     n = 8_760 if quick else 43_800
@@ -83,8 +98,12 @@ def run(quick: bool) -> dict:
     btc = sweep(planted(np.random.default_rng(SEED), r_btc), r_btc)
     ph = sweep(placeholder_positions(close.reset_index(drop=True)), r_btc)
     s0 = syn["by_cost_bps"]["0"]
-    ok = (syn["falls"] and btc["falls"] and ph["falls"] and s0["sharpe_hourly"] > 2 * s0["se"]
-          and syn["first_negative_cost_bps"] is not None)
+    ok = passes([syn["falls"], btc["falls"], ph["falls"]], s0["sharpe_hourly"], s0["se"], syn["first_negative_cost_bps"])
+    blueprint_met = all([syn["falls"], btc["falls"], ph["falls"]])
+    ics = np.array([seed_ic(s, n) for s in range(20 if quick else 200)])
+    context = {"seeds": "0..199" if not quick else "0..19", "ic_mean": float(ics.mean()), "ic_sd": float(ics.std(ddof=1)),
+               "seed_71_ic": syn["realised_position_ic"],
+               "seed_71_percentile": float(np.mean(ics < syn["realised_position_ic"]))}
 
     def zero(a: dict) -> dict:
         return {k: a["by_cost_bps"]["0"][k] for k in ("sharpe_hourly", "se", "sharpe_annual")}
@@ -98,16 +117,21 @@ def run(quick: bool) -> dict:
         "control": {"arm": "zero cost", "synthetic": zero(syn), "btc_planted": zero(btc), "btc_placeholder": zero(ph)},
         "effect": {"estimate": syn["break_even_bps"], "what": "break-even cost, synthetic arm (bps per unit turnover)",
                    "se": s0["se"] / s0["sharpe_hourly"] * syn["break_even_bps"] if s0["sharpe_hourly"] > 0 else None,
-                   "se_note": "delta-method: break-even scales with the gross Sharpe"},
+                   "se_note": "delta-method: break-even scales with the gross Sharpe",
+                   "blueprint_condition_met": blueprint_met, "multi_seed_ic_context": context},
         "verdict_rule": "supports if net Sharpe strictly falls with cost in every arm, and the synthetic arm's zero-cost "
                         "Sharpe > 2 SE and turns negative at some cost <= 20 bps",
         "verdict": verdict(ok),
-        "summary": (f"synthetic edge: annual Sharpe {s0['sharpe_annual']:.2f} (SE {s0['se'] * math.sqrt(8_760):.2f}) at 0 bp "
+        "summary": (f"stricter than the blueprint (whose falls-with-cost condition is "
+                    f"{'met' if blueprint_met else 'NOT met'}, by construction): synthetic edge annual Sharpe {s0['sharpe_annual']:.2f} (SE {s0['se'] * math.sqrt(8_760):.2f}) at 0 bp "
                     f"(realised position IC {syn['realised_position_ic']:.4f} vs {syn['expected_position_ic']:.4f} expected), "
                     f"break-even "
                     f"{syn['break_even_bps']:.2f} bp, {syn['by_cost_bps']['5']['sharpe_annual']:.2f} at 5 bp; "
                     f"BTC planted edge break-even {btc['break_even_bps']:.2f} bp; toy placeholder on BTC "
-                    f"{ph['by_cost_bps']['0']['sharpe_annual']:.2f} gross, {ph['by_cost_bps']['10']['sharpe_annual']:.2f} at 10 bp"),
+                    f"{ph['by_cost_bps']['0']['sharpe_annual']:.2f} gross, {ph['by_cost_bps']['10']['sharpe_annual']:.2f} at 10 bp; "
+                    f"seed 71's IC is at the {context['seed_71_percentile']:.0%} point of {len(ics)} seeds "
+                    f"(mean {context['ic_mean']:.4f}, sd {context['ic_sd']:.4f})"
+                    f"{': an unlucky draw' if context['seed_71_percentile'] < 0.05 else ''}"),
     }
 
 

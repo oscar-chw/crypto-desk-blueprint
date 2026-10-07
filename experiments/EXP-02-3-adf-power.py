@@ -42,6 +42,10 @@ def ar1(rng: np.random.Generator, phi: float, n: int) -> np.ndarray:
     return y
 
 
+def passes(power_by_length: list[float]) -> bool:
+    return any(p < HIGH_POWER for p in power_by_length)
+
+
 def run(quick: bool) -> dict:
     reps, lengths = (50, (250, 1_000)) if quick else (1_000, (250, 500, 1_000, 2_500, 5_000))
     rng = np.random.default_rng(SEED)
@@ -58,7 +62,7 @@ def run(quick: bool) -> dict:
                                                       "kpss_reject": k, "kpss_se": prop_se(k, reps)}
     p98 = cells["0.98"]
     short = str(lengths[0])
-    ok = any(c["adf_reject"] < HIGH_POWER for c in p98.values())
+    ok = passes([c["adf_reject"] for c in p98.values()])
     weak = [n for n, c in p98.items() if c["adf_reject"] < HIGH_POWER]
     return {
         "inputs": {"reps_per_cell": reps, "lengths": list(lengths), "phis": list(PHIS),

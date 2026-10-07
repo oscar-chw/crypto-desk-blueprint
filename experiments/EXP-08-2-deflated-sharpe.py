@@ -32,6 +32,12 @@ META = {
 SEED, T = 82, 250
 
 
+def passes(raw: list[float], raw_se: list[float], deflated: list[float], reps: int) -> bool:
+    """raw/deflated: false-pass rates on the N grid, N = 1 first."""
+    rises = all(a < b for a, b in zip(raw, raw[1:])) and raw[-1] - raw[0] > 2 * np.hypot(raw_se[-1], raw_se[0])
+    return rises and all(d <= 0.05 + 2 * prop_se(0.05, reps) for d in deflated)
+
+
 def run(quick: bool) -> dict:
     reps, grid = (50, (1, 10, 100)) if quick else (1_000, (1, 10, 100, 1_000))
     rng = np.random.default_rng(SEED)
@@ -51,9 +57,7 @@ def run(quick: bool) -> dict:
                         "mean_best_annual_sharpe": float(np.mean(best_sr) * np.sqrt(365))}
     rates = [by_n[str(n)]["raw_false_pass"] for n in grid]
     top, base = by_n[str(grid[-1])], by_n["1"]
-    rises = all(a < b for a, b in zip(rates, rates[1:])) and \
-        top["raw_false_pass"] - base["raw_false_pass"] > 2 * np.hypot(top["raw_se"], base["raw_se"])
-    dsr_ok = all(c["deflated_false_pass"] <= 0.05 + 2 * prop_se(0.05, reps) for c in by_n.values())
+    ok = passes(rates, [by_n[str(n)]["raw_se"] for n in grid], [by_n[str(n)]["deflated_false_pass"] for n in grid], reps)
     raw_txt = ", ".join(f"{by_n[str(n)]['raw_false_pass']:.0%}" for n in grid)
     dsr_txt = ", ".join(f"{by_n[str(n)]['deflated_false_pass']:.1%}" for n in grid)
     return {
@@ -67,7 +71,7 @@ def run(quick: bool) -> dict:
                    "deflated_at_max_n": top["deflated_false_pass"]},
         "verdict_rule": "supports if raw false-pass rises with N (strictly, top vs N=1 > 2 SE) and deflated "
                         "false-pass <= 5% + 2 SE at every N",
-        "verdict": verdict(rises and dsr_ok),
+        "verdict": verdict(ok),
         "summary": (f"raw PSR false-pass {raw_txt} for N = {', '.join(str(n) for n in grid)}; deflated {dsr_txt}"),
     }
 

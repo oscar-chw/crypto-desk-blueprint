@@ -44,6 +44,10 @@ def one_universe(rng: np.random.Generator, n_coins: int, days: int) -> tuple[flo
     return float(surv.mean()), float(pit.mean()), float(survivors.mean())
 
 
+def passes(diff: float, se: float) -> bool:
+    return diff > 2 * se
+
+
 def run(quick: bool) -> dict:
     n_univ, n_coins, days = (3, 50, 365) if quick else (50, 200, 1_095)
     seeds = list(range(100, 100 + n_univ))
@@ -51,7 +55,7 @@ def run(quick: bool) -> dict:
     surv_m, surv_se = mean_se(res[:, 0])
     pit_m, pit_se = mean_se(res[:, 1])
     d_m, d_se = mean_se(res[:, 0] - res[:, 1])
-    ok = d_m > 2 * d_se
+    ok = passes(d_m, d_se)
     return {
         "inputs": {"universes": n_univ, "coins": n_coins, "days": days, "daily_sigma": SIGMA,
                    "delist_below": FLOOR},

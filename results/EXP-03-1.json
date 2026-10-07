@@ -12,51 +12,91 @@
   "bars": 1000,
   "q": 0.0001,
   "noise_ar1_phi": 0.9,
-  "break_at": 500,
-  "not_worse_threshold": 1.1
+  "break_at": 500
  },
  "seeds": [
   7
  ],
- "metric": "out-of-sample spread variance; ratio RMSE vs true beta",
+ "metric": "out-of-sample ratio RMSE vs true beta (verdict); spread variance; spread lag-1 autocorrelation",
  "treatment": {
   "arm": "Kalman ratio",
   "with_break": {
-   "kalman_spread_var": 10.200098,
-   "kalman_ratio_rmse": 0.03728
+   "ratio_rmse": 0.03728,
+   "spread_var": 10.200098,
+   "spread_acf1": 0.626955
   },
   "no_break": {
-   "kalman_spread_var": 1.557412,
-   "kalman_ratio_rmse": 0.021845
+   "ratio_rmse": 0.021845,
+   "spread_var": 1.557412,
+   "spread_acf1": 0.557103
   }
  },
  "control": {
   "arm": "static OLS ratio (first half)",
   "with_break": {
-   "ols_spread_var": 26.380627,
-   "ols_ratio_rmse": 0.500046
+   "ratio_rmse": 0.500046,
+   "spread_var": 26.380627,
+   "spread_acf1": 0.964039
   },
   "no_break": {
-   "ols_spread_var": 5.051855,
-   "ols_ratio_rmse": 0.003526
+   "ratio_rmse": 0.003526,
+   "spread_var": 5.051855,
+   "spread_acf1": 0.889687
   }
  },
  "effect": {
-  "estimate": -0.833816,
-  "se": 0.043224,
-  "what": "mean log(Kalman / OLS spread variance) with the break",
-  "no_break_log_var_ratio": -1.171627,
-  "no_break_se": 0.015909,
-  "with_break_rmse_diff": -0.462766,
-  "with_break_rmse_diff_se": 0.000656,
+  "estimate": -0.462766,
+  "se": 0.000656,
+  "what": "ratio RMSE, Kalman minus OLS, with the break",
   "no_break_rmse_diff": 0.018319,
-  "no_break_rmse_diff_se": 0.000508
+  "no_break_rmse_diff_se": 0.000508,
+  "outcome": "mixed: Kalman wins only after a break",
+  "with_break": {
+   "ratio_rmse": {
+    "kalman": 0.03728,
+    "ols": 0.500046,
+    "diff": -0.462766,
+    "se": 0.000656
+   },
+   "spread_var": {
+    "kalman": 10.200098,
+    "ols": 26.380627,
+    "diff": -16.18053,
+    "se": 1.149267
+   },
+   "spread_acf1": {
+    "kalman": 0.626955,
+    "ols": 0.964039,
+    "diff": -0.337084,
+    "se": 0.00499
+   }
+  },
+  "no_break": {
+   "ratio_rmse": {
+    "kalman": 0.021845,
+    "ols": 0.003526,
+    "diff": 0.018319,
+    "se": 0.000508
+   },
+   "spread_var": {
+    "kalman": 1.557412,
+    "ols": 5.051855,
+    "diff": -3.494443,
+    "se": 0.068488
+   },
+   "spread_acf1": {
+    "kalman": 0.557103,
+    "ols": 0.889687,
+    "diff": -0.332584,
+    "se": 0.005239
+   }
+  }
  },
- "verdict_rule": "supports if break log var ratio < -2 SE and no-break geometric-mean var ratio <= 1.10",
- "verdict": "supports",
- "summary": "after the break Kalman spread variance is 0.43x OLS's (ratio RMSE 0.037 vs 0.500); with no break 0.31x (RMSE 0.022 vs 0.004)",
+ "verdict_rule": "supports if Kalman minus OLS ratio RMSE < -2 SE with the break and <= +2 SE without it",
+ "verdict": "does not support",
+ "summary": "mixed: Kalman wins only after a break. Ratio RMSE with the break 0.037 Kalman vs 0.500 OLS; without it 0.022 vs 0.004 (diff SE 0.0005). Without a break the Kalman spread's lag-1 autocorrelation is 0.56 vs 0.89 for OLS (true noise 0.90): the filter absorbs part of the mean reversion",
  "quick": false,
- "runtime_s": 0.31,
+ "runtime_s": 0.32,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

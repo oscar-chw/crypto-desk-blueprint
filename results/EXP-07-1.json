@@ -206,13 +206,21 @@
   "estimate": 0.104681,
   "what": "break-even cost, synthetic arm (bps per unit turnover)",
   "se": 0.288161,
-  "se_note": "delta-method: break-even scales with the gross Sharpe"
+  "se_note": "delta-method: break-even scales with the gross Sharpe",
+  "blueprint_condition_met": true,
+  "multi_seed_ic_context": {
+   "seeds": "0..199",
+   "ic_mean": 0.015738,
+   "ic_sd": 0.005354,
+   "seed_71_ic": 0.001731,
+   "seed_71_percentile": 0.0
+  }
  },
  "verdict_rule": "supports if net Sharpe strictly falls with cost in every arm, and the synthetic arm's zero-cost Sharpe > 2 SE and turns negative at some cost <= 20 bps",
  "verdict": "does not support",
- "summary": "synthetic edge: annual Sharpe 0.16 (SE 0.45) at 0 bp (realised position IC 0.0017 vs 0.0160 expected), break-even 0.10 bp, -7.58 at 5 bp; BTC planted edge break-even 1.83 bp; toy placeholder on BTC -2.14 gross, -5.29 at 10 bp",
+ "summary": "stricter than the blueprint (whose falls-with-cost condition is met, by construction): synthetic edge annual Sharpe 0.16 (SE 0.45) at 0 bp (realised position IC 0.0017 vs 0.0160 expected), break-even 0.10 bp, -7.58 at 5 bp; BTC planted edge break-even 1.83 bp; toy placeholder on BTC -2.14 gross, -5.29 at 10 bp; seed 71's IC is at the 0% point of 200 seeds (mean 0.0157, sd 0.0054): an unlucky draw",
  "quick": false,
- "runtime_s": 0.01,
+ "runtime_s": 0.18,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

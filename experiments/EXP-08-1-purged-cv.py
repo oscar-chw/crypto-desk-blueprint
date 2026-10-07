@@ -1,5 +1,7 @@
-"""EXP-08-1: on pure noise with overlapping labels, plain k-fold shows false skill and purged k-fold with an
-embargo does not.
+"""EXP-08-1: on pure noise with overlapping labels, shuffled ("plain") k-fold shows false skill and purged
+k-fold with an embargo does not. Narrower than the blueprint's rules 1 and 2: in this setup the false
+skill comes from shuffling; contiguous folds without purging are reported to show whether purging and the
+embargo add a measurable benefit on top (no embargo-length sweep is run, so rule 2 is not tested).
 
 Generating process: 20 independent paths (quick: 2) of 2,000 hourly bars (quick: 600); log price is a
 Gaussian random walk with N(0, 0.01^2) steps, so no feature can predict the label. Seed 81.
@@ -9,7 +11,8 @@ Model: scikit-learn RandomForestClassifier, 50 trees (quick: 10), min_samples_le
 
 Treatment ("plain k-fold", as most tutorials run it): 5-fold KFold with shuffling. Control:
 pipeline.cv.PurgedKFold, 5 contiguous folds, label intervals [t, t+20] purged, embargo 50 bars (the longest
-feature window). Also reported, not part of the verdict: 5 contiguous folds without purging.
+feature window). Also reported, not part of the verdict: 5 contiguous folds without purging, and the paired difference
+contiguous-unpurged minus purged (the benefit of purging and embargo).
 Metric: out-of-fold accuracy, mean over folds per path; mean over paths with SE across paths.
 Verdict rule (from blueprint/08-validation.md): supports if plain accuracy exceeds 0.5 by more than 2 SE and
 purged accuracy is within 2 SE of 0.5.
@@ -31,8 +34,8 @@ from pipeline.cv import PurgedKFold  # noqa: E402
 from pipeline.types import NS_PER_HOUR  # noqa: E402
 
 META = {
-    "id": "EXP-08-1", "backs": "08-validation rules 1, 2",
-    "claim": "plain k-fold finds skill in noise; purged does not",
+    "id": "EXP-08-1", "backs": "08-validation rule 1",
+    "claim": "shuffled k-fold finds skill in noise; purged k-fold does not",
     "script": "experiments/EXP-08-1-purged-cv.py",
     "data": synthetic("Gaussian random walk, sigma 1% per bar; labels = sign of next 20-bar return"),
 }
@@ -56,6 +59,10 @@ def cv_accuracy(X, y, splits, trees: int) -> float:
     return float(np.mean(acc))
 
 
+def passes(plain: float, plain_se: float, purged: float, purged_se: float) -> bool:
+    return plain - 0.5 > 2 * plain_se and abs(purged - 0.5) <= 2 * purged_se
+
+
 def run(quick: bool) -> dict:
     paths, n, trees = (2, 600, 10) if quick else (20, 2_000, 50)
     rng = np.random.default_rng(SEED)
@@ -70,19 +77,24 @@ def run(quick: bool) -> dict:
     st = {k: mean_se(v) for k, v in accs.items()}
     (pl, pl_se), (pu, pu_se), (cu, cu_se) = st["plain_shuffled"], st["purged_embargo"], st["contiguous_unpurged"]
     d_m, d_se = mean_se(np.array(accs["plain_shuffled"]) - np.array(accs["purged_embargo"]))
-    ok = pl - 0.5 > 2 * pl_se and abs(pu - 0.5) <= 2 * pu_se
+    ok = passes(pl, pl_se, pu, pu_se)
+    b_m, b_se = mean_se(np.array(accs["contiguous_unpurged"]) - np.array(accs["purged_embargo"]))
+    benefit = "a measurable" if b_m > 2 * b_se else "no measurable"
     return {
         "inputs": {"paths": paths, "bars": n, "label_horizon": H, "embargo_bars": EMBARGO, "folds": FOLDS, "trees": trees},
         "seeds": [SEED], "metric": "out-of-fold accuracy on unpredictable labels (truth: 0.5)",
         "treatment": {"arm": "plain k-fold (shuffled)", "accuracy": pl, "se": pl_se,
                       "contiguous_unpurged": {"accuracy": cu, "se": cu_se}},
         "control": {"arm": "purged k-fold + embargo", "accuracy": pu, "se": pu_se},
-        "effect": {"estimate": d_m, "se": d_se, "what": "paired plain minus purged accuracy"},
+        "effect": {"estimate": d_m, "se": d_se, "what": "paired plain minus purged accuracy",
+                   "purge_benefit": b_m, "purge_benefit_se": b_se,
+                   "purge_benefit_what": "paired contiguous-unpurged minus purged accuracy"},
         "series": accs,
         "verdict_rule": "supports if plain accuracy - 0.5 > 2 SE and |purged accuracy - 0.5| <= 2 SE",
         "verdict": verdict(ok),
         "summary": (f"accuracy on pure noise: plain shuffled k-fold {pl:.3f} (SE {pl_se:.3f}), contiguous unpurged "
-                    f"{cu:.3f} (SE {cu_se:.3f}), purged + embargo {pu:.3f} (SE {pu_se:.3f})"),
+                    f"{cu:.3f} (SE {cu_se:.3f}), purged + embargo {pu:.3f} (SE {pu_se:.3f}). Shuffling creates the false skill; "
+                    f"purging and embargo add {benefit} benefit here (contiguous minus purged {b_m:+.3f}, SE {b_se:.3f})"),
     }
 
 

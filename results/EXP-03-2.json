@@ -27,7 +27,7 @@
   "half_life": {
    "5": {
     "true": 5,
-    "kendall_rel_bias": -0.014758,
+    "theory_rel_bias": -0.007336,
     "mean_estimate": 4.969135,
     "mean_error": -0.030865,
     "se": 0.014387,
@@ -37,7 +37,7 @@
    },
    "20": {
     "true": 20,
-    "kendall_rel_bias": -0.055066,
+    "theory_rel_bias": -0.03022,
     "mean_estimate": 19.377543,
     "mean_error": -0.622457,
     "se": 0.105867,
@@ -47,7 +47,7 @@
    },
    "50": {
     "true": 50,
-    "kendall_rel_bias": -0.126575,
+    "theory_rel_bias": -0.078029,
     "mean_estimate": 46.50716,
     "mean_error": -3.49284,
     "se": 0.39605,
@@ -79,9 +79,9 @@
  },
  "verdict_rule": "supports if every mean half-life error is within 2 SE of 0 and EG size <= 5% + 2 SE",
  "verdict": "does not support",
- "summary": "half-life error -0.6% at 5, -3.1% at 20, -7.0% at 50 (worst 8.8 SE; Kendall's AR(1) bias formula predicts -12.7% at 50); Engle-Granger size 5.2% (SE 0.7%), 14.7% with the plain ADF critical value",
+ "summary": "half-life error -0.6% at 5, -3.1% at 20, -7.0% at 50 (worst 8.8 SE), against a small-sample theory of -0.7%, -3.0%, -7.8%: the bias is the known AR(1) estimation bias; Engle-Granger size 5.2% (SE 0.7%), 14.7% with the plain ADF critical value",
  "quick": false,
- "runtime_s": 1.23,
+ "runtime_s": 1.28,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

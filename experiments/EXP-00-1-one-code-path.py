@@ -72,6 +72,10 @@ def mismatches(a: dict[int, float], b: dict[int, float]) -> int:
     return sum(1 for k in keys if k not in a or k not in b or abs(a[k] - b[k]) > 1e-9 * max(1.0, abs(a[k])))
 
 
+def passes(shared: int, delayed: int) -> bool:
+    return shared == 0 and delayed > 0
+
+
 def run(quick: bool) -> dict:
     seeds, n = ([1], 120) if quick else ([1, 2, 3, 4, 5], 400)
     shared, delayed, n_orders = 0, 0, 0
@@ -97,7 +101,7 @@ def run(quick: bool) -> dict:
         shared += mismatches(backtest, paper)
         delayed += mismatches(backtest, paper_lag)
         n_orders += len(backtest)
-    ok = shared == 0 and delayed > 0
+    ok = passes(shared, delayed)
     return {
         "inputs": {"bars_per_path": n, "paths": len(seeds), "first_decision_bar": FIRST},
         "seeds": seeds, "metric": "mismatched orders vs the backtest loop",

@@ -73,12 +73,13 @@ What is verified today, by command:
 | Building blocks behave as specified | `pytest tests` | [tests/test_blocks.py](tests/test_blocks.py) |
 | An offline toy runs end to end | `bash scripts/demo.sh` | [scripts/demo.py](scripts/demo.py) |
 | Lint and tests pass together | `bash scripts/check.sh` | [ci.yml](.github/workflows/ci.yml) |
-| 20 evidence experiments run, each with a control arm and a pre-stated verdict rule | `python scripts/run_experiments.py` | [blueprint/EVIDENCE.md](blueprint/EVIDENCE.md), [results/](results) |
+| 20 evidence experiments run, each with a control arm and a verdict rule in its docstring | `python scripts/run_experiments.py` | [blueprint/EVIDENCE.md](blueprint/EVIDENCE.md), [results/](results) |
 
 **Evidence experiments.** Each design rule that matters is tested by an experiment with a control arm
-in the same run, fixed seeds, a standard error and a falsification condition written before it ran.
+in the same run, fixed seeds, a standard error and a falsification condition. The thresholds were committed together with
+the first results, so they are not a pre-registration.
 <!-- results:start -->
-16 of 20 experiments support their rule. Not supported: EXP-01-2, EXP-02-1, EXP-03-2, EXP-07-1. Experiments on public Binance data: EXP-04-1, EXP-05-1, EXP-07-1; the rest use synthetic data with a stated generating process. Full table: [blueprint/EVIDENCE.md](blueprint/EVIDENCE.md).
+15 of 20 experiments support their rule. Not supported: EXP-01-2, EXP-02-1, EXP-03-1, EXP-03-2, EXP-07-1. Experiments on public Binance data: EXP-04-1, EXP-05-1, EXP-07-1; the rest use synthetic data with a stated generating process. Full table: [blueprint/EVIDENCE.md](blueprint/EVIDENCE.md).
 <!-- results:end -->
 
 ![Plain vs purged k-fold on pure noise](docs/figures/EXP-08-1.png)

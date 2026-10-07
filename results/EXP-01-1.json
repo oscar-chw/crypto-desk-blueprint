@@ -87,7 +87,7 @@
  "verdict": "supports",
  "summary": "survivors-only 9.6 bp/day vs point-in-time -0.1 bp/day; bias 9.7 bp/day (SE 0.1), about 35% a year, with 58% of coins surviving",
  "quick": false,
- "runtime_s": 0.22,
+ "runtime_s": 0.21,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

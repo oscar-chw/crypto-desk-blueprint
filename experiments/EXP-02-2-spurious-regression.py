@@ -31,6 +31,10 @@ META = {
 SEED, STEPS, T_CRIT = 5, 500, 1.9647
 
 
+def passes(levels: float, levels_se: float, returns: float, n: int) -> bool:
+    return levels - 0.05 > 2 * levels_se and abs(returns - 0.05) <= 2 * prop_se(0.05, n)
+
+
 def run(quick: bool) -> dict:
     n_pairs = 100 if quick else 1_000
     rng = np.random.default_rng(SEED)
@@ -42,7 +46,7 @@ def run(quick: bool) -> dict:
             rej[arm] += abs(t[1]) > T_CRIT
     lv, rt = rej["levels"] / n_pairs, rej["returns"] / n_pairs
     lv_se, rt_se = prop_se(lv, n_pairs), prop_se(rt, n_pairs)
-    ok = lv - 0.05 > 2 * lv_se and abs(rt - 0.05) <= 2 * prop_se(0.05, n_pairs)
+    ok = passes(lv, lv_se, rt, n_pairs)
     return {
         "inputs": {"pairs": n_pairs, "steps": STEPS, "test": "two-sided t, 5%", "t_crit": T_CRIT},
         "seeds": [SEED], "metric": "rejection rate of slope = 0 at nominal 5%",

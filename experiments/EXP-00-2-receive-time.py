@@ -3,7 +3,7 @@
 Generating process: trades arrive as a Poisson process at 5 per second for 6 hours (quick: 30 minutes),
 seed 2. Trade prices follow a log random walk with 1 bp steps from 30,000. Each trade reaches us after a
 lognormal delay with median 50 ms and log-sigma s in {0.5, 1.0, 1.5, 2.0} (larger s = heavier tail; s = 1.0
-is the pre-stated "realistic" case: mean 82 ms, 99th percentile 0.5 s). Bars are 1 minute, cover
+is taken as the "realistic" case: mean 82 ms, 99th percentile 0.5 s). Bars are 1 minute, cover
 (open, close] and are built as pipeline.types.Bar.
 
 Control: bars built on exchange time (misassigned by construction 0). Treatment: bars on receive time.
@@ -47,6 +47,10 @@ def build_bars(ts_ns: np.ndarray, px: np.ndarray, delay_ns: np.ndarray) -> dict[
     return out
 
 
+def passes(share_real: float, se_real: float, shares_by_tail: list[float]) -> bool:
+    return share_real > 2 * se_real and all(a < b for a, b in zip(shares_by_tail, shares_by_tail[1:]))
+
+
 def run(quick: bool) -> dict:
     rng = np.random.default_rng(SEED)
     seconds = 1_800 if quick else 6 * 3_600
@@ -68,9 +72,7 @@ def run(quick: bool) -> dict:
         arms[str(s)] = {"misassigned_share": share, "se": prop_se(share, n), "mean_delay_ms": float(delay.mean() / 1e6),
                         "close_abs_diff_bps": m, "close_abs_diff_se": se}
     real = arms["1.0"]
-    rising = all(arms[str(a)]["misassigned_share"] < arms[str(b)]["misassigned_share"]
-                 for a, b in zip(SIGMAS, SIGMAS[1:]))
-    ok = real["misassigned_share"] > 2 * real["se"] and rising
+    ok = passes(real["misassigned_share"], real["se"], [arms[str(s)]["misassigned_share"] for s in SIGMAS])
     return {
         "inputs": {"trades": n, "seconds": seconds, "rate_per_s": RATE, "bar_s": 60, "delay_median_ms": 50,
                    "delay_log_sigmas": list(SIGMAS)},

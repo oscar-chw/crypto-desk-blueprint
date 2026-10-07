@@ -398,7 +398,7 @@
  "verdict": "supports",
  "summary": "true edge: half Kelly keeps 74% of full Kelly's median growth with p95 max drawdown 69% vs 93%; edge overestimated 2x: half Kelly growth 12.84 vs 0.35 bp/period, drawdown 93% vs 100%",
  "quick": false,
- "runtime_s": 1.54,
+ "runtime_s": 1.37,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

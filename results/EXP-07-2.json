@@ -94,7 +94,7 @@
  "verdict": "supports",
  "summary": "at 5x top depth: sliced 1.48 bp (sd 1.72) vs single 2.80 bp (sd 0); at 0.1x: 1.00 vs 1.00 bp",
  "quick": false,
- "runtime_s": 0.09,
+ "runtime_s": 0.08,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

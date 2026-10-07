@@ -33,6 +33,10 @@ META = {
 SEED, SIGMA, HOURS, GAP = 3, 0.01, 168, 6
 
 
+def passes(ff_bias: float, ff_se: float, diff: float, diff_se: float) -> bool:
+    return ff_bias < -2 * ff_se and diff < -2 * diff_se
+
+
 def run(quick: bool) -> dict:
     n_paths = 100 if quick else 1_000
     rng = np.random.default_rng(SEED)
@@ -47,7 +51,7 @@ def run(quick: bool) -> dict:
     ff_m, ff_se = mean_se(ff)
     gap_m, gap_se = mean_se(gap)
     d_m, d_se = mean_se(ff - gap)
-    ok = ff_m < -2 * ff_se and d_m < -2 * d_se
+    ok = passes(ff_m, ff_se, d_m, d_se)
     return {
         "inputs": {"paths": n_paths, "hours": HOURS, "outage_hours": GAP, "sigma_per_hour": SIGMA,
                    "estimator": "sample std (ddof=1) of hourly log returns"},

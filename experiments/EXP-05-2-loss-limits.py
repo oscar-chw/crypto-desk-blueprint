@@ -67,6 +67,10 @@ def simulate(r: np.ndarray, u: np.ndarray, gate: RiskEngine | None) -> tuple[flo
     return mdd, eq, halts
 
 
+def passes(dd_diff: float, se: float) -> bool:
+    return dd_diff < -2 * se
+
+
 def run(quick: bool) -> dict:
     paths, days = (20, 60) if quick else (1_000, 365)
     rng = np.random.default_rng(SEED)
@@ -89,7 +93,7 @@ def run(quick: bool) -> dict:
     sd = np.std(np.array(boots), axis=0, ddof=1)
     dd_diff = q(res[:, 0]) - q(res[:, 2])
     med_diff = float(np.median(res[:, 1]) - np.median(res[:, 3]))
-    ok = dd_diff < -2 * sd[0]
+    ok = passes(dd_diff, float(sd[0]))
     return {
         "inputs": {"paths": paths, "days": days, "bar_hours": 4, "limits": LIMITS.__dict__,
                    "regime": "30 days at -1%/day, random start"},

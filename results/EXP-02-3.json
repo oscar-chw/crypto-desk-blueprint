@@ -139,7 +139,7 @@
  "verdict": "supports",
  "summary": "ADF power at phi 0.98: 13% at T = 250, 100% at T = 5000 (below 80% at T = 250, 500, 1000); phi 0.5: 100%; size at phi 1: 4.4%",
  "quick": false,
- "runtime_s": 8.66,
+ "runtime_s": 8.85,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

@@ -10,7 +10,7 @@ Metric: Spearman rank IC between the feature at t and the return from t to t+1, 
 half of each path (out of sample; nothing is fitted). Mean IC over paths with SE across paths. Diagnostic,
 not part of the verdict: the trailing feature's Pearson correlation without demeaning (both means are 0
 by construction), which removes the small-sample bias that demeaning an overlapping-window series adds.
-Verdict rule (from blueprint/02-features.md, stated before the run): supports if the leaked IC exceeds 0 by
+Verdict rule (from blueprint/02-features.md, stricter than its falsification condition): supports if the leaked IC exceeds 0 by
 more than 2 SE and the trailing IC is within 2 SE of 0. The blueprint's narrower falsification condition
 (leaked IC within 2 SE of 0) is reported beside it.
 """
@@ -50,6 +50,10 @@ def ic(feature: pd.Series, fwd: pd.Series) -> float:
     return float(feature[ok].rank().corr(fwd[ok].rank()))
 
 
+def passes(leak: float, leak_se: float, trail: float, trail_se: float) -> bool:
+    return leak > 2 * leak_se and abs(trail) <= 2 * trail_se
+
+
 def run(quick: bool) -> dict:
     n_paths, n = (20, 500) if quick else (200, 2_000)
     rng = np.random.default_rng(SEED)
@@ -67,7 +71,7 @@ def run(quick: bool) -> dict:
         raw.append(float(x @ y / np.sqrt((x @ x) * (y @ y))))
     lk_m, lk_se = mean_se(ics["centred"])
     tr_m, tr_se = mean_se(ics["trailing"])
-    ok = lk_m > 2 * lk_se and abs(tr_m) <= 2 * tr_se
+    ok = passes(lk_m, lk_se, tr_m, tr_se)
     falsified = lk_m <= 2 * lk_se  # the blueprint's falsification condition, reported beside the verdict
     return {
         "inputs": {"paths": n_paths, "bars": n, "window": WINDOW, "oos": "second half of each path"},

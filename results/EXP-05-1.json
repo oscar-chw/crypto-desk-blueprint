@@ -35,11 +35,13 @@
    "max_dd_p95": 0.814274,
    "max_dd_p95_se": 0.004291,
    "turnover": 0.029374,
+   "share_ruined": 0.0005,
    "rv_rms_rel_to_target": 0.332125
   },
   "btc_daily": {
    "dispersion": 0.291319,
    "max_dd": 0.601437,
+   "ruined": 0.0,
    "turnover": 0.025653,
    "rv_rms_rel_to_target": 0.337195
   }
@@ -51,11 +53,13 @@
    "max_dd_p95": 0.857523,
    "max_dd_p95_se": 0.006083,
    "turnover": 0.0,
+   "share_ruined": 0.0005,
    "rv_rms_rel_to_target": 0.520245
   },
   "btc_daily": {
    "dispersion": 0.425691,
    "max_dd": 0.676618,
+   "ruined": 0.0,
    "turnover": 0.0,
    "rv_rms_rel_to_target": 0.514071
   }
@@ -68,9 +72,9 @@
  },
  "verdict_rule": "supports if synthetic dispersion diff < -2 SE and BTC dispersion lower",
  "verdict": "supports",
- "summary": "vol dispersion 0.30 vs 0.38 (synthetic, diff SE 0.001), 0.29 vs 0.43 on BTC; p95 max drawdown 81% vs 86%; turnover 0.029 vs 0 per day",
+ "summary": "vol dispersion 0.30 vs 0.38 (synthetic, diff SE 0.001), 0.29 vs 0.43 on BTC; p95 max drawdown 81% vs 86%; turnover 0.029 vs 0 per day; paths ruined 0.1% vs 0.1%",
  "quick": false,
- "runtime_s": 0.3,
+ "runtime_s": 0.29,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

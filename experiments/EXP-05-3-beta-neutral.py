@@ -38,6 +38,10 @@ def slope(y: np.ndarray, x: np.ndarray) -> float:
     return float(xc @ (y - y.mean()) / (xc @ xc))
 
 
+def passes(diff: float, se: float) -> bool:
+    return diff > 2 * se
+
+
 def run(quick: bool) -> dict:
     books = 50 if quick else 500
     rng = np.random.default_rng(SEED)
@@ -58,7 +62,7 @@ def run(quick: bool) -> dict:
     dn_m, dn_se = mean_se(dn)
     bn_m, bn_se = mean_se(bn)
     d_m, d_se = mean_se(np.array(dn) - np.array(bn))
-    ok = d_m > 2 * d_se
+    ok = passes(d_m, d_se)
     return {
         "inputs": {"books": books, "coins": N, "betas": "0.6..1.6", "estimation_days": EST, "oos_days": OOS},
         "seeds": [SEED], "metric": "|realised out-of-sample beta of the book to BTC|",

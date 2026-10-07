@@ -37,7 +37,7 @@
  "verdict": "supports",
  "summary": "0 of 1849 orders differ on the shared path vs 1849 with a one-bar delay",
  "quick": false,
- "runtime_s": 2.34,
+ "runtime_s": 2.23,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

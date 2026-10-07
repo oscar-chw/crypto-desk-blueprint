@@ -9,7 +9,7 @@ Control (the venue's rule): discrete payments, pipeline.pricing.funding_cashflow
 (start, end]. Treatment: continuous accrual, the prevailing interval's rate times the share of the interval
 held. Metric: mean absolute P&L error (treatment minus control) in bps of notional by holding length, with
 SE across holds, and the same as a share of the mean absolute accrued funding for that length.
-Verdict rule (from blueprint/04-pricing.md): "negligible" = relative error below 10%, stated in advance;
+Verdict rule (from blueprint/04-pricing.md): "negligible" = relative error below 10% (a threshold chosen by the author);
 supports if the error is not negligible at some holding length (the rule is wrong if it is negligible at
 every length). Where the error peaks is reported, not part of the verdict.
 """
@@ -32,6 +32,10 @@ META = {
     "data": synthetic("AR(1) funding rate per 8 h interval, mean 1 bp, phi 0.9, innovation sd 0.5 bp"),
 }
 SEED, INTERVAL_H, MEAN, PHI, SD, NEGLIGIBLE = 42, 8, 1e-4, 0.9, 5e-5, 0.10
+
+
+def passes(rel_errors: list[float]) -> bool:
+    return max(rel_errors) >= NEGLIGIBLE
 
 
 def run(quick: bool) -> dict:
@@ -64,7 +68,7 @@ def run(quick: bool) -> dict:
         rel[h] = m / scale
     worst_abs = max(by_len, key=lambda k: by_len[k]["mae_bps"])
     worst_rel = max(rel, key=rel.get)
-    ok = max(rel.values()) >= NEGLIGIBLE
+    ok = passes(list(rel.values()))
     short, long_ = by_len["4"], by_len["8"]
     return {
         "inputs": {"holds_per_length": n_holds, "lengths_h": "1..24", "interval_h": INTERVAL_H,

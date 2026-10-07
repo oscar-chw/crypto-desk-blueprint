@@ -63,6 +63,10 @@ def sliced(qty: float, rng: np.random.Generator) -> float:
     return cost / qty
 
 
+def passes(single_minus_sliced_and_se: list[tuple[float, float]]) -> bool:
+    return all(g > 2 * se for g, se in single_minus_sliced_and_se)
+
+
 def run(quick: bool) -> dict:
     sims = 100 if quick else 2_000
     rng = np.random.default_rng(SEED)
@@ -74,7 +78,7 @@ def run(quick: bool) -> dict:
         treat[str(q)] = {"mean_bps": m, "se": se, "sd_bps": float(s.std(ddof=1)), "children": int(np.ceil(q / CAP))}
         ctrl[str(q)] = {"mean_bps": one, "sd_bps": 0.0}
         if q >= 2:
-            ok &= one - m > 2 * se
+            ok &= passes([(one - m, se)])
     big = str(SIZES[-1])
     return {
         "inputs": {"sims_per_size": sims, "sizes_x_top_depth": list(SIZES), "levels": LEVELS, "refill_per_step": REFILL,

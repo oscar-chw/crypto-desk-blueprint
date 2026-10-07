@@ -1,17 +1,20 @@
-"""EXP-03-1: a Kalman-filtered hedge ratio tracks a regime shift that a static OLS ratio misses.
+"""EXP-03-1: a Kalman-filtered hedge ratio tracks a regime shift that a static OLS ratio misses, and is
+no worse than OLS when there is no shift.
 
 Generating process: 200 paths (quick: 20) of 1,000 bars. x is a random walk from 100 with N(0, 1) steps;
 y_t = beta_t x_t + u_t with u an AR(1), phi 0.9, N(0, 1) innovations. Break arm: beta = 1.0 for the first
 500 bars and 1.5 after. No-break arm: beta = 1.0 throughout. Seed 7.
 
-Treatment: a Kalman filter on y_t = beta_t x_t + v_t, beta_t = beta_{t-1} + w_t, with Q = 1e-4 fixed in
-advance and R = the variance of the first-half OLS residuals; the spread at t uses the prior beta_{t|t-1}
-(known before y_t). Control: the OLS ratio (no intercept) fitted on the first 500 bars and held fixed.
-Metric, on bars 500..999 (out of sample): spread variance and RMS error of the ratio against the true
-beta. The effect is the paired mean log ratio of spread variances (Kalman / OLS) with SE across paths.
-Verdict rule (from blueprint/03-strategy.md): supports if, with the break, Kalman's log variance ratio is
-below 0 by more than 2 SE, and without the break Kalman's spread variance is not clearly worse, stated in
-advance as a geometric-mean ratio no more than 1.10.
+Treatment: a Kalman filter on y_t = beta_t x_t + v_t, beta_t = beta_{t-1} + w_t, with Q = 1e-4 and
+R = the variance of the first-half OLS residuals; the spread at t uses the prior beta_{t|t-1} (known before
+y_t). Control: the OLS ratio (no intercept) fitted on the first 500 bars and held fixed.
+Metrics, on bars 500..999 (out of sample): RMS error of the ratio against the true beta (tracking error,
+the verdict metric), spread variance, and the spread's lag-1 autocorrelation next to the true noise's 0.9
+(a filter that absorbs the noise into the ratio shows a lower autocorrelation: it removes the mean
+reversion a pairs trade lives on). Paired differences with SE across paths.
+Verdict rule (from blueprint/03-strategy.md): supports if Kalman's tracking error is below OLS's by more
+than 2 SE with the break, and not above OLS's by more than 2 SE without it. Failing only the second leg is
+reported as "mixed: Kalman wins only after a break".
 """
 from __future__ import annotations
 
@@ -30,7 +33,7 @@ META = {
     "script": "experiments/EXP-03-1-kalman-hedge.py",
     "data": synthetic("x random walk; y = beta_t x + AR(1) noise; beta 1.0 -> 1.5 at mid-sample"),
 }
-SEED, N, Q, PHI, NOT_WORSE = 7, 1_000, 1e-4, 0.9, 1.10
+SEED, N, Q, PHI = 7, 1_000, 1e-4, 0.9
 
 
 def kalman_prior(y: np.ndarray, x: np.ndarray, r: float, q: float) -> np.ndarray:
@@ -45,7 +48,12 @@ def kalman_prior(y: np.ndarray, x: np.ndarray, r: float, q: float) -> np.ndarray
     return out
 
 
-def one_path(rng: np.random.Generator, brk: bool) -> tuple[float, float, float, float]:
+def acf1(z: np.ndarray) -> float:
+    z = z - z.mean()
+    return float(z[1:] @ z[:-1] / (z @ z))
+
+
+def one_path(rng: np.random.Generator, brk: bool) -> tuple[float, ...]:
     x = 100 + np.cumsum(rng.standard_normal(N))
     u = np.zeros(N)
     e = rng.standard_normal(N)
@@ -58,48 +66,52 @@ def one_path(rng: np.random.Generator, brk: bool) -> tuple[float, float, float, 
     r = float(np.var(y[:h] - b_ols * x[:h]))
     b_kf = kalman_prior(y, x, r, Q)
     oos = slice(h, None)
-    var_k, var_o = np.var(y[oos] - b_kf[oos] * x[oos]), np.var(y[oos] - b_ols * x[oos])
+    s_k, s_o = y[oos] - b_kf[oos] * x[oos], y[oos] - b_ols * x[oos]
     te_k = float(np.sqrt(np.mean((b_kf[oos] - beta[oos]) ** 2)))
     te_o = float(np.sqrt(np.mean((b_ols - beta[oos]) ** 2)))
-    return float(var_k), float(var_o), te_k, te_o
+    return te_k, te_o, float(np.var(s_k)), float(np.var(s_o)), acf1(s_k), acf1(s_o)
 
 
 def arm(rng: np.random.Generator, paths: int, brk: bool) -> dict:
     r = np.array([one_path(rng, brk) for _ in range(paths)])
-    lr_m, lr_se = mean_se(np.log(r[:, 0] / r[:, 1]))
-    te_m, te_se = mean_se(r[:, 2] - r[:, 3])
-    return {"kalman_spread_var": float(np.mean(r[:, 0])), "ols_spread_var": float(np.mean(r[:, 1])),
-            "log_var_ratio": lr_m, "log_var_ratio_se": lr_se, "gm_var_ratio": float(np.exp(lr_m)),
-            "kalman_ratio_rmse": float(np.mean(r[:, 2])), "ols_ratio_rmse": float(np.mean(r[:, 3])),
-            "rmse_diff": te_m, "rmse_diff_se": te_se}
+    out = {}
+    for j, name in enumerate(("ratio_rmse", "spread_var", "spread_acf1")):
+        d_m, d_se = mean_se(r[:, 2 * j] - r[:, 2 * j + 1])
+        out[name] = {"kalman": float(r[:, 2 * j].mean()), "ols": float(r[:, 2 * j + 1].mean()), "diff": d_m, "se": d_se}
+    return out
+
+
+def passes(brk_diff: float, brk_se: float, flat_diff: float, flat_se: float) -> bool:
+    """Tracking-error differences, Kalman minus OLS, with and without the break."""
+    return brk_diff < -2 * brk_se and flat_diff <= 2 * flat_se
 
 
 def run(quick: bool) -> dict:
     paths = 20 if quick else 200
     rng = np.random.default_rng(SEED)
     brk, flat = arm(rng, paths, True), arm(rng, paths, False)
-    ok = brk["log_var_ratio"] < -2 * brk["log_var_ratio_se"] and flat["gm_var_ratio"] <= NOT_WORSE
-    return {
-        "inputs": {"paths": paths, "bars": N, "q": Q, "noise_ar1_phi": PHI, "break_at": N // 2,
-                   "not_worse_threshold": NOT_WORSE},
-        "seeds": [SEED], "metric": "out-of-sample spread variance; ratio RMSE vs true beta",
-        "treatment": {"arm": "Kalman ratio", "with_break": {k: brk[k] for k in ("kalman_spread_var", "kalman_ratio_rmse")},
-                      "no_break": {k: flat[k] for k in ("kalman_spread_var", "kalman_ratio_rmse")}},
-        "control": {"arm": "static OLS ratio (first half)",
-                    "with_break": {k: brk[k] for k in ("ols_spread_var", "ols_ratio_rmse")},
-                    "no_break": {k: flat[k] for k in ("ols_spread_var", "ols_ratio_rmse")}},
-        "effect": {"estimate": brk["log_var_ratio"], "se": brk["log_var_ratio_se"],
-                   "what": "mean log(Kalman / OLS spread variance) with the break",
-                   "no_break_log_var_ratio": flat["log_var_ratio"], "no_break_se": flat["log_var_ratio_se"],
-                   "with_break_rmse_diff": brk["rmse_diff"], "with_break_rmse_diff_se": brk["rmse_diff_se"],
-                   "no_break_rmse_diff": flat["rmse_diff"], "no_break_rmse_diff_se": flat["rmse_diff_se"]},
-        "verdict_rule": "supports if break log var ratio < -2 SE and no-break geometric-mean var ratio <= 1.10",
-        "verdict": verdict(ok),
-        "summary": (f"after the break Kalman spread variance is {brk['gm_var_ratio']:.2f}x OLS's (ratio RMSE "
-                    f"{brk['kalman_ratio_rmse']:.3f} vs {brk['ols_ratio_rmse']:.3f}); with no break "
-                    f"{flat['gm_var_ratio']:.2f}x (RMSE {flat['kalman_ratio_rmse']:.3f} vs {flat['ols_ratio_rmse']:.3f})"),
-    }
+    b, f = brk["ratio_rmse"], flat["ratio_rmse"]
+    ok = passes(b["diff"], b["se"], f["diff"], f["se"])
+    mixed = b["diff"] < -2 * b["se"] and not ok
+    label = "supports" if ok else ("mixed: Kalman wins only after a break" if mixed else "does not support")
 
+    def side(k: str) -> dict:
+        return {arm_name: {m: a[m][k] for m in a} for arm_name, a in (("with_break", brk), ("no_break", flat))}
+    return {
+        "inputs": {"paths": paths, "bars": N, "q": Q, "noise_ar1_phi": PHI, "break_at": N // 2},
+        "seeds": [SEED], "metric": "out-of-sample ratio RMSE vs true beta (verdict); spread variance; spread lag-1 autocorrelation",
+        "treatment": {"arm": "Kalman ratio", **side("kalman")},
+        "control": {"arm": "static OLS ratio (first half)", **side("ols")},
+        "effect": {"estimate": b["diff"], "se": b["se"], "what": "ratio RMSE, Kalman minus OLS, with the break",
+                   "no_break_rmse_diff": f["diff"], "no_break_rmse_diff_se": f["se"], "outcome": label,
+                   "with_break": brk, "no_break": flat},
+        "verdict_rule": "supports if Kalman minus OLS ratio RMSE < -2 SE with the break and <= +2 SE without it",
+        "verdict": verdict(ok),
+        "summary": (f"{label}. Ratio RMSE with the break {b['kalman']:.3f} Kalman vs {b['ols']:.3f} OLS; without it "
+                    f"{f['kalman']:.3f} vs {f['ols']:.3f} (diff SE {f['se']:.4f}). Without a break the Kalman spread's "
+                    f"lag-1 autocorrelation is {flat['spread_acf1']['kalman']:.2f} vs {flat['spread_acf1']['ols']:.2f} "
+                    f"for OLS (true noise 0.90): the filter absorbs part of the mean reversion"),
+    }
 
 if __name__ == "__main__":
     sys.exit(main(META, run))

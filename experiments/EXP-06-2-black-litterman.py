@@ -36,6 +36,10 @@ def gross_one(w: np.ndarray) -> np.ndarray:
     return w / np.abs(w).sum()
 
 
+def passes(diff: float, se: float) -> bool:
+    return diff < -2 * se
+
+
 def run(quick: bool) -> dict:
     draws = 50 if quick else 500
     rng = np.random.default_rng(SEED)
@@ -56,7 +60,7 @@ def run(quick: bool) -> dict:
     mv_m, mv_se = mean_se(l1_mv)
     bl_m, bl_se = mean_se(l1_bl)
     d_m, d_se = mean_se(l1_bl - l1_mv)
-    ok = d_m < -2 * d_se
+    ok = passes(d_m, d_se)
     return {
         "inputs": {"assets": N, "rebalances": draws, "delta": DELTA, "tau": TAU, "view_noise_sd": VIEW_SD,
                    "normalisation": "gross 1"},

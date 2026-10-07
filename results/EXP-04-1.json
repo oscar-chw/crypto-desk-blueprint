@@ -1,7 +1,7 @@
 {
  "id": "EXP-04-1",
- "backs": "04-pricing rules 1-3",
- "claim": "funding and futures basis co-move; basis stays in the band (public Binance data)",
+ "backs": "04-pricing rule 3",
+ "claim": "annualised funding and futures basis are correlated (public Binance data)",
  "script": "experiments/EXP-04-1-funding-vs-basis.py",
  "data": {
   "kind": "public",
@@ -43,7 +43,10 @@
    "mean_funding_ann": 0.051211,
    "mean_basis_ann": 0.063562,
    "share_hours_outside_band": 0.093379,
-   "share_outside_hours_on_stress_days": 0.091687
+   "out_of_band_days": 35,
+   "share_out_of_band_days_that_are_stress_days": 0.114286,
+   "stress_share_se": 0.053779,
+   "stress_base_rate": 0.1
   },
   "eth": {
    "corr": 0.347526,
@@ -52,7 +55,10 @@
    "mean_funding_ann": 0.049232,
    "mean_basis_ann": 0.056984,
    "share_hours_outside_band": 0.090297,
-   "share_outside_hours_on_stress_days": 0.064475
+   "out_of_band_days": 35,
+   "share_out_of_band_days_that_are_stress_days": 0.114286,
+   "stress_share_se": 0.053779,
+   "stress_base_rate": 0.1
   }
  },
  "control": {
@@ -76,7 +82,7 @@
  },
  "verdict_rule": "supports if, for BTC and ETH, aligned corr > 95th percentile of shifted corr",
  "verdict": "supports",
- "summary": "aligned corr BTC 0.34 (SE 0.05), ETH 0.35 (SE 0.08) vs shifted 95th pct 0.17 / 0.14; basis outside the assumed band 9.3% / 9.0% of hours",
+ "summary": "aligned corr BTC 0.34 (SE 0.05), ETH 0.35 (SE 0.08) vs shifted 95th pct 0.17 / 0.14. Findings, not verdict: basis outside the assumed band in 9.3% / 9.0% of hours; 11% (SE 5%) / 11% of out-of-band days are top-decile BTC move days vs 10% by chance: no clustering in stress shown",
  "quick": false,
  "runtime_s": 0.21,
  "env": {
