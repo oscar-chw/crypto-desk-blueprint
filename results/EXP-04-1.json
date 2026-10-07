@@ -1,0 +1,87 @@
+{
+ "id": "EXP-04-1",
+ "backs": "04-pricing rules 1-3",
+ "claim": "funding and futures basis co-move; basis stays in the band (public Binance data)",
+ "script": "experiments/EXP-04-1-funding-vs-basis.py",
+ "data": {
+  "kind": "public",
+  "files": [
+   "binance_hourly_2025.csv",
+   "binance_funding_2025.csv"
+  ],
+  "source_urls": [
+   "https://data.binance.vision/data/spot/monthly/klines/",
+   "https://data.binance.vision/data/futures/um/monthly/klines/",
+   "https://data.binance.vision/data/futures/um/monthly/fundingRate/"
+  ],
+  "fetched_utc": "2026-10-07"
+ },
+ "inputs": {
+  "period": "2025-01-01 to 2025-12-31",
+  "band_rates": {
+   "r_quote_lend": 0.04,
+   "r_quote_borrow": 0.08,
+   "r_base_lend": 0.0,
+   "r_base_borrow": 0.03,
+   "round_trip_cost": 0.002
+  },
+  "shifts": 200,
+  "bootstrap": 1000,
+  "block_obs": 21,
+  "roll_days_before_expiry": 14
+ },
+ "seeds": [
+  41
+ ],
+ "metric": "correlation of annualised funding and annualised basis",
+ "treatment": {
+  "arm": "aligned funding and basis",
+  "btc": {
+   "corr": 0.339279,
+   "se": 0.052357,
+   "n": 1094,
+   "mean_funding_ann": 0.051211,
+   "mean_basis_ann": 0.063562,
+   "share_hours_outside_band": 0.093379,
+   "share_outside_hours_on_stress_days": 0.091687
+  },
+  "eth": {
+   "corr": 0.347526,
+   "se": 0.075156,
+   "n": 1094,
+   "mean_funding_ann": 0.049232,
+   "mean_basis_ann": 0.056984,
+   "share_hours_outside_band": 0.090297,
+   "share_outside_hours_on_stress_days": 0.064475
+  }
+ },
+ "control": {
+  "arm": "funding shifted by a random offset",
+  "btc": {
+   "corr_mean": -0.050299,
+   "corr_p95": 0.171186,
+   "corr_sd": 0.11953
+  },
+  "eth": {
+   "corr_mean": -0.02471,
+   "corr_p95": 0.139761,
+   "corr_sd": 0.126249
+  }
+ },
+ "effect": {
+  "estimate": 0.389578,
+  "se": 0.130494,
+  "what": "BTC aligned minus mean shifted correlation",
+  "eth": 0.372236
+ },
+ "verdict_rule": "supports if, for BTC and ETH, aligned corr > 95th percentile of shifted corr",
+ "verdict": "supports",
+ "summary": "aligned corr BTC 0.34 (SE 0.05), ETH 0.35 (SE 0.08) vs shifted 95th pct 0.17 / 0.14; basis outside the assumed band 9.3% / 9.0% of hours",
+ "quick": false,
+ "runtime_s": 0.21,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

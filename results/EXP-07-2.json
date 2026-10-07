@@ -1,0 +1,103 @@
+{
+ "id": "EXP-07-2",
+ "backs": "07-execution rule 5",
+ "claim": "slicing beats one market order for large orders",
+ "script": "experiments/EXP-07-2-slicing.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "1 bp ladder, depth D0 (1 + 0.1 (k-1)), 20% refill per step, mid RW 1 bp per step"
+ },
+ "inputs": {
+  "sims_per_size": 2000,
+  "sizes_x_top_depth": [
+   0.1,
+   0.5,
+   1.0,
+   2.0,
+   5.0
+  ],
+  "levels": 400,
+  "refill_per_step": 0.2,
+  "child_cap_x_top_depth": 0.5,
+  "mid_step_bps": 1.0
+ },
+ "seeds": [
+  72
+ ],
+ "metric": "implementation shortfall vs arrival mid (bps): mean and sd",
+ "treatment": {
+  "arm": "sliced, child <= 0.5 x top depth per step",
+  "by_size": {
+   "0.1": {
+    "mean_bps": 1.0,
+    "se": 0.0,
+    "sd_bps": 0.0,
+    "children": 1
+   },
+   "0.5": {
+    "mean_bps": 1.0,
+    "se": 0.0,
+    "sd_bps": 0.0,
+    "children": 1
+   },
+   "1.0": {
+    "mean_bps": 1.003345,
+    "se": 0.011057,
+    "sd_bps": 0.494491,
+    "children": 2
+   },
+   "2.0": {
+    "mean_bps": 1.292604,
+    "se": 0.020564,
+    "sd_bps": 0.91966,
+    "children": 4
+   },
+   "5.0": {
+    "mean_bps": 1.480741,
+    "se": 0.038539,
+    "sd_bps": 1.723503,
+    "children": 10
+   }
+  }
+ },
+ "control": {
+  "arm": "one market order",
+  "by_size": {
+   "0.1": {
+    "mean_bps": 1.0,
+    "sd_bps": 0.0
+   },
+   "0.5": {
+    "mean_bps": 1.0,
+    "sd_bps": 0.0
+   },
+   "1.0": {
+    "mean_bps": 1.0,
+    "sd_bps": 0.0
+   },
+   "2.0": {
+    "mean_bps": 1.5,
+    "sd_bps": 0.0
+   },
+   "5.0": {
+    "mean_bps": 2.8,
+    "sd_bps": 0.0
+   }
+  }
+ },
+ "effect": {
+  "estimate": -1.319259,
+  "se": 0.038539,
+  "what": "sliced minus single mean shortfall at 5x top depth"
+ },
+ "verdict_rule": "supports if sliced mean shortfall < single by > 2 SE at 2x and 5x top-of-book depth",
+ "verdict": "supports",
+ "summary": "at 5x top depth: sliced 1.48 bp (sd 1.72) vs single 2.80 bp (sd 0); at 0.1x: 1.00 vs 1.00 bp",
+ "quick": false,
+ "runtime_s": 0.09,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

@@ -2,10 +2,20 @@
 
 Runnable demonstrations behind the design rules. Specifications (hypothesis, setup, control, metric,
 expected direction, falsification condition) live in each `blueprint/0N-*.md` under `## Evidence`;
-the status table is [blueprint/EVIDENCE.md](../blueprint/EVIDENCE.md). Not implemented yet.
+the generated results table is [blueprint/EVIDENCE.md](../blueprint/EVIDENCE.md).
 
-One script per id, `exp_0N_k.py`, writing `results/EXP-0N-k.json` with the seed, the control arm's
-numbers next to the treatment's, and standard errors.
+One script per id, `EXP-0N-k-<slug>.py`, built on the `pipeline/` blocks where one exists. Each states its
+generating process (or public data source) and its verdict rule in the docstring, fixes its seeds, runs
+the control in the same run and writes `results/EXP-0N-k.json`: inputs, seeds, both arms, the effect
+with its standard error, the verdict and the runtime. `_common.py` holds the result schema and the
+offline loader for the committed public extract in `data/`; `_tsa.py` holds the ADF, KPSS and
+Engle-Granger tests (numpy only).
+
+```bash
+python scripts/run_experiments.py                       # all, then regenerate the docs
+python experiments/EXP-08-1-purged-cv.py --quick --out /tmp/x   # one, small n, same code path
+pytest tests/test_experiments.py                        # every experiment in quick mode (CI)
+```
 
 | id | short name |
 |---|---|

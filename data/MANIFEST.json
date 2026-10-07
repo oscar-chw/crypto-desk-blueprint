@@ -1,0 +1,26 @@
+{
+  "source": "https://data.binance.vision/data",
+  "fetched_utc": "2026-10-07",
+  "fetched_by": "scripts/fetch_data.py",
+  "notes": "Hourly closes for 2025 (bar close time, UTC ms). Quarterly column = nearest USD-M quarterly with >= 14 days to expiry (expiry 08:00 UTC). Funding = last_funding_rate per interval. Daily = BTCUSDT spot close.",
+  "files": [
+    {
+      "file": "binance_hourly_2025.csv",
+      "sha256": "f7acb19ed9859dedbcfe5c9529233afba9e58a706b90ce6c54698d9e40e4d023",
+      "bytes": 540745,
+      "rows": 8760
+    },
+    {
+      "file": "binance_funding_2025.csv",
+      "sha256": "fc2f77b89dddcaa0805788c859cac5caafc7b209d67db4cc5a3cabaae5a33e68",
+      "bytes": 103828,
+      "rows": 2190
+    },
+    {
+      "file": "binance_btcusdt_daily.csv",
+      "sha256": "c5b13bf2f81b0caee1c7598db2fd22bd25fc91c285619cdf6a24827203cf658f",
+      "bytes": 66165,
+      "rows": 2922
+    }
+  ]
+}

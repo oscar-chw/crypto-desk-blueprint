@@ -1,0 +1,65 @@
+{
+ "id": "EXP-03-1",
+ "backs": "03-strategy rule 6",
+ "claim": "Kalman hedge ratio tracks a regime shift",
+ "script": "experiments/EXP-03-1-kalman-hedge.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "x random walk; y = beta_t x + AR(1) noise; beta 1.0 -> 1.5 at mid-sample"
+ },
+ "inputs": {
+  "paths": 200,
+  "bars": 1000,
+  "q": 0.0001,
+  "noise_ar1_phi": 0.9,
+  "break_at": 500,
+  "not_worse_threshold": 1.1
+ },
+ "seeds": [
+  7
+ ],
+ "metric": "out-of-sample spread variance; ratio RMSE vs true beta",
+ "treatment": {
+  "arm": "Kalman ratio",
+  "with_break": {
+   "kalman_spread_var": 10.200098,
+   "kalman_ratio_rmse": 0.03728
+  },
+  "no_break": {
+   "kalman_spread_var": 1.557412,
+   "kalman_ratio_rmse": 0.021845
+  }
+ },
+ "control": {
+  "arm": "static OLS ratio (first half)",
+  "with_break": {
+   "ols_spread_var": 26.380627,
+   "ols_ratio_rmse": 0.500046
+  },
+  "no_break": {
+   "ols_spread_var": 5.051855,
+   "ols_ratio_rmse": 0.003526
+  }
+ },
+ "effect": {
+  "estimate": -0.833816,
+  "se": 0.043224,
+  "what": "mean log(Kalman / OLS spread variance) with the break",
+  "no_break_log_var_ratio": -1.171627,
+  "no_break_se": 0.015909,
+  "with_break_rmse_diff": -0.462766,
+  "with_break_rmse_diff_se": 0.000656,
+  "no_break_rmse_diff": 0.018319,
+  "no_break_rmse_diff_se": 0.000508
+ },
+ "verdict_rule": "supports if break log var ratio < -2 SE and no-break geometric-mean var ratio <= 1.10",
+ "verdict": "supports",
+ "summary": "after the break Kalman spread variance is 0.43x OLS's (ratio RMSE 0.037 vs 0.500); with no break 0.31x (RMSE 0.022 vs 0.004)",
+ "quick": false,
+ "runtime_s": 0.31,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

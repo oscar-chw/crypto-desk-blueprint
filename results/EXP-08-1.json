@@ -1,0 +1,119 @@
+{
+ "id": "EXP-08-1",
+ "backs": "08-validation rules 1, 2",
+ "claim": "plain k-fold finds skill in noise; purged does not",
+ "script": "experiments/EXP-08-1-purged-cv.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "Gaussian random walk, sigma 1% per bar; labels = sign of next 20-bar return"
+ },
+ "inputs": {
+  "paths": 20,
+  "bars": 2000,
+  "label_horizon": 20,
+  "embargo_bars": 50,
+  "folds": 5,
+  "trees": 50
+ },
+ "seeds": [
+  81
+ ],
+ "metric": "out-of-fold accuracy on unpredictable labels (truth: 0.5)",
+ "treatment": {
+  "arm": "plain k-fold (shuffled)",
+  "accuracy": 0.662306,
+  "se": 0.004866,
+  "contiguous_unpurged": {
+   "accuracy": 0.496606,
+   "se": 0.008415
+  }
+ },
+ "control": {
+  "arm": "purged k-fold + embargo",
+  "accuracy": 0.495311,
+  "se": 0.007828
+ },
+ "effect": {
+  "estimate": 0.166995,
+  "se": 0.006557,
+  "what": "paired plain minus purged accuracy"
+ },
+ "series": {
+  "plain_shuffled": [
+   0.693782,
+   0.664767,
+   0.643005,
+   0.67772,
+   0.606736,
+   0.678756,
+   0.64715,
+   0.652332,
+   0.68601,
+   0.66114,
+   0.654922,
+   0.623834,
+   0.665285,
+   0.662694,
+   0.679793,
+   0.664767,
+   0.651295,
+   0.660104,
+   0.681865,
+   0.690155
+  ],
+  "contiguous_unpurged": [
+   0.521762,
+   0.562694,
+   0.451813,
+   0.539896,
+   0.45544,
+   0.537306,
+   0.448705,
+   0.498964,
+   0.475648,
+   0.478238,
+   0.502591,
+   0.455959,
+   0.472539,
+   0.508808,
+   0.504145,
+   0.502073,
+   0.5,
+   0.428497,
+   0.53886,
+   0.548187
+  ],
+  "purged_embargo": [
+   0.510363,
+   0.550259,
+   0.463731,
+   0.527979,
+   0.466321,
+   0.535233,
+   0.446632,
+   0.494819,
+   0.481865,
+   0.476166,
+   0.507254,
+   0.464249,
+   0.482902,
+   0.483938,
+   0.491192,
+   0.497927,
+   0.509326,
+   0.421244,
+   0.540415,
+   0.554404
+  ]
+ },
+ "verdict_rule": "supports if plain accuracy - 0.5 > 2 SE and |purged accuracy - 0.5| <= 2 SE",
+ "verdict": "supports",
+ "summary": "accuracy on pure noise: plain shuffled k-fold 0.662 (SE 0.005), contiguous unpurged 0.497 (SE 0.008), purged + embargo 0.495 (SE 0.008)",
+ "quick": false,
+ "runtime_s": 17.09,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

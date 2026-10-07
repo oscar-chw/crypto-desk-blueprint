@@ -1,0 +1,79 @@
+{
+ "id": "EXP-05-1",
+ "backs": "05-risk rules 1, 2",
+ "claim": "vol targeting steadies realised vol and trims tail drawdown",
+ "script": "experiments/EXP-05-1-vol-targeting.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "GARCH(1,1)-t(4), alpha 0.10, beta 0.85, unconditional daily vol 3%",
+  "public": {
+   "files": [
+    "binance_btcusdt_daily.csv"
+   ],
+   "source_urls": [
+    "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1d/"
+   ]
+  }
+ },
+ "inputs": {
+  "paths": 2000,
+  "days": 1000,
+  "target_daily_vol": 0.02,
+  "ewma_lambda": 0.94,
+  "leverage_cap": 4.0,
+  "rolling_days": 21,
+  "btc_days": 2921
+ },
+ "seeds": [
+  51
+ ],
+ "metric": "sd of log rolling 21-day realised vol; p95 max drawdown; turnover",
+ "treatment": {
+  "arm": "vol-targeted (EWMA)",
+  "synthetic": {
+   "dispersion_log_rv": 0.296423,
+   "max_dd_p95": 0.814274,
+   "max_dd_p95_se": 0.004291,
+   "turnover": 0.029374,
+   "rv_rms_rel_to_target": 0.332125
+  },
+  "btc_daily": {
+   "dispersion": 0.291319,
+   "max_dd": 0.601437,
+   "turnover": 0.025653,
+   "rv_rms_rel_to_target": 0.337195
+  }
+ },
+ "control": {
+  "arm": "fixed notional, same average exposure",
+  "synthetic": {
+   "dispersion_log_rv": 0.383177,
+   "max_dd_p95": 0.857523,
+   "max_dd_p95_se": 0.006083,
+   "turnover": 0.0,
+   "rv_rms_rel_to_target": 0.520245
+  },
+  "btc_daily": {
+   "dispersion": 0.425691,
+   "max_dd": 0.676618,
+   "turnover": 0.0,
+   "rv_rms_rel_to_target": 0.514071
+  }
+ },
+ "effect": {
+  "estimate": -0.086754,
+  "se": 0.00089,
+  "what": "paired dispersion difference (synthetic)",
+  "btc_dispersion_diff": -0.134373
+ },
+ "verdict_rule": "supports if synthetic dispersion diff < -2 SE and BTC dispersion lower",
+ "verdict": "supports",
+ "summary": "vol dispersion 0.30 vs 0.38 (synthetic, diff SE 0.001), 0.29 vs 0.43 on BTC; p95 max drawdown 81% vs 86%; turnover 0.029 vs 0 per day",
+ "quick": false,
+ "runtime_s": 0.3,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

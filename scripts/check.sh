@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source scripts/env.sh
-"$PY" -m ruff check --select E9,F pipeline conformance tests scripts
+"$PY" -m ruff check --select E9,F pipeline conformance tests scripts experiments
 out="$("$PY" -m pytest -q 2>&1)" || { echo "$out"; echo "check: pytest failed"; exit 1; }
 echo "$out" | tail -3
 n="$(echo "$out" | grep -Eo '[0-9]+ passed' | head -1 | grep -Eo '[0-9]+' || echo 0)"

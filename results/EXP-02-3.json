@@ -1,0 +1,148 @@
+{
+ "id": "EXP-02-3",
+ "backs": "02-features rule 4",
+ "claim": "ADF has low power near a unit root",
+ "script": "experiments/EXP-02-3-adf-power.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "Gaussian AR(1), phi 0.98 / 1.0 / 0.5"
+ },
+ "inputs": {
+  "reps_per_cell": 1000,
+  "lengths": [
+   250,
+   500,
+   1000,
+   2500,
+   5000
+  ],
+  "phis": [
+   0.98,
+   1.0,
+   0.5
+  ],
+  "adf_lags": "int(4 (T/100)^0.25)",
+  "kpss_lags": "int(12 (T/100)^0.25)"
+ },
+ "seeds": [
+  6
+ ],
+ "metric": "rejection rate at 5% per (phi, length)",
+ "treatment": {
+  "arm": "phi 0.98 (stationary, persistent)",
+  "by_length": {
+   "250": {
+    "adf_reject": 0.126,
+    "adf_se": 0.010494,
+    "kpss_reject": 0.545,
+    "kpss_se": 0.015747
+   },
+   "500": {
+    "adf_reject": 0.29,
+    "adf_se": 0.014349,
+    "kpss_reject": 0.613,
+    "kpss_se": 0.015402
+   },
+   "1000": {
+    "adf_reject": 0.761,
+    "adf_se": 0.013486,
+    "kpss_reject": 0.595,
+    "kpss_se": 0.015523
+   },
+   "2500": {
+    "adf_reject": 1.0,
+    "adf_se": 0.0,
+    "kpss_reject": 0.541,
+    "kpss_se": 0.015758
+   },
+   "5000": {
+    "adf_reject": 1.0,
+    "adf_se": 0.0,
+    "kpss_reject": 0.451,
+    "kpss_se": 0.015735
+   }
+  }
+ },
+ "control": {
+  "arm": "phi 0.5",
+  "by_length": {
+   "250": {
+    "adf_reject": 1.0,
+    "adf_se": 0.0,
+    "kpss_reject": 0.056,
+    "kpss_se": 0.007271
+   },
+   "500": {
+    "adf_reject": 1.0,
+    "adf_se": 0.0,
+    "kpss_reject": 0.056,
+    "kpss_se": 0.007271
+   },
+   "1000": {
+    "adf_reject": 1.0,
+    "adf_se": 0.0,
+    "kpss_reject": 0.05,
+    "kpss_se": 0.006892
+   },
+   "2500": {
+    "adf_reject": 1.0,
+    "adf_se": 0.0,
+    "kpss_reject": 0.048,
+    "kpss_se": 0.00676
+   },
+   "5000": {
+    "adf_reject": 1.0,
+    "adf_se": 0.0,
+    "kpss_reject": 0.051,
+    "kpss_se": 0.006957
+   }
+  },
+  "size_check_phi_1": {
+   "250": {
+    "adf_reject": 0.044,
+    "adf_se": 0.006486,
+    "kpss_reject": 0.759,
+    "kpss_se": 0.013525
+   },
+   "500": {
+    "adf_reject": 0.037,
+    "adf_se": 0.005969,
+    "kpss_reject": 0.895,
+    "kpss_se": 0.009694
+   },
+   "1000": {
+    "adf_reject": 0.044,
+    "adf_se": 0.006486,
+    "kpss_reject": 0.966,
+    "kpss_se": 0.005731
+   },
+   "2500": {
+    "adf_reject": 0.043,
+    "adf_se": 0.006415,
+    "kpss_reject": 0.997,
+    "kpss_se": 0.001729
+   },
+   "5000": {
+    "adf_reject": 0.05,
+    "adf_se": 0.006892,
+    "kpss_reject": 1.0,
+    "kpss_se": 0.0
+   }
+  }
+ },
+ "effect": {
+  "estimate": 0.126,
+  "se": 0.010494,
+  "what": "ADF power at phi 0.98, T = 250"
+ },
+ "verdict_rule": "supports if ADF power at phi 0.98 < 0.80 at some length",
+ "verdict": "supports",
+ "summary": "ADF power at phi 0.98: 13% at T = 250, 100% at T = 5000 (below 80% at T = 250, 500, 1000); phi 0.5: 100%; size at phi 1: 4.4%",
+ "quick": false,
+ "runtime_s": 8.66,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

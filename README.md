@@ -73,16 +73,27 @@ What is verified today, by command:
 | Building blocks behave as specified | `pytest tests` | [tests/test_blocks.py](tests/test_blocks.py) |
 | An offline toy runs end to end | `bash scripts/demo.sh` | [scripts/demo.py](scripts/demo.py) |
 | Lint and tests pass together | `bash scripts/check.sh` | [ci.yml](.github/workflows/ci.yml) |
+| 20 evidence experiments run, each with a control arm and a pre-stated verdict rule | `python scripts/run_experiments.py` | [blueprint/EVIDENCE.md](blueprint/EVIDENCE.md), [results/](results) |
 
-The experiments that would back each design rule are specified in
-[blueprint/EVIDENCE.md](blueprint/EVIDENCE.md) and have not been run.
+**Evidence experiments.** Each design rule that matters is tested by an experiment with a control arm
+in the same run, fixed seeds, a standard error and a falsification condition written before it ran.
+<!-- results:start -->
+16 of 20 experiments support their rule. Not supported: EXP-01-2, EXP-02-1, EXP-03-2, EXP-07-1. Experiments on public Binance data: EXP-04-1, EXP-05-1, EXP-07-1; the rest use synthetic data with a stated generating process. Full table: [blueprint/EVIDENCE.md](blueprint/EVIDENCE.md).
+<!-- results:end -->
+
+![Plain vs purged k-fold on pure noise](docs/figures/EXP-08-1.png)
+
+![Full vs half Kelly drawdown distribution](docs/figures/EXP-06-1.png)
+
+![Annualised funding vs quarterly basis, BTC 2025](docs/figures/EXP-04-1.png)
 
 ## Quick start
 
 ```bash
-pip install -e ".[dev]"            # Python 3.11+
+pip install -e ".[dev]"            # Python 3.11+ (dev includes the experiment dependencies)
 make test                          # ruff (E9,F) + unit tests + conformance + mutants
 bash scripts/demo.sh               # offline toy: data to execution, prints a short summary
+python scripts/run_experiments.py  # all 20 experiments (a few minutes), rewrites the results tables
 make new-strategy name=X           # scaffold implementations/X, then make it pass its suite
 make conformance impl=implementations.X
 ```
@@ -96,8 +107,8 @@ blueprint/     why: FOUNDATIONS.md, one file per stage (rules, failure modes, so
 pipeline/      contracts (protocols.py) and shared building blocks
 conformance/   stage suites, the toy implementation, and the mutants that prove the suites can fail
 tests/         unit tests of the building blocks
-experiments/   specified evidence experiments (not yet implemented)
-scripts/       new_stage.py scaffold, check.sh, demo.sh
+experiments/   evidence experiments EXP-*.py; results/ holds their JSON, data/ the public extract
+scripts/       new_stage.py scaffold, check.sh, demo.sh, run_experiments.py, fetch_data.py
 ```
 
 ## Design decisions and trade-offs
@@ -117,8 +128,11 @@ scripts/       new_stage.py scaffold, check.sh, demo.sh
 
 ## Limits
 
-- The evidence experiments (EXP-xx) are specified, not yet run; no design rule here is backed by a
-  measured result yet.
+- Most experiments use synthetic data with a stated generating process; they show that a rule does what
+  it claims under that process, not that the effect has the same size on a live market.
+- The public-data experiments use one year (2025) of Binance hourly data for two coins, plus BTC daily
+  closes since 2018; the funding-basis band uses assumed borrow and lend rates.
+- Some experiments do not support their rule as specified; they are kept and named under Results.
 - The toy strategy is a placeholder; this repo makes no claim that any strategy makes money.
 - Only a paper venue exists; a live exchange adapter is not included.
 - Conformance covers the contracts listed in the stage files, not every way a desk can fail.

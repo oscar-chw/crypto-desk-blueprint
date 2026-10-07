@@ -1,0 +1,46 @@
+{
+ "id": "EXP-00-1",
+ "backs": "00-infrastructure rule 2",
+ "claim": "one code path: backtest and paper give identical orders",
+ "script": "experiments/EXP-00-1-one-code-path.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "toy SyntheticBars: hourly GBM, log-return sigma 0.005 per bar"
+ },
+ "inputs": {
+  "bars_per_path": 400,
+  "paths": 5,
+  "first_decision_bar": 30
+ },
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "metric": "mismatched orders vs the backtest loop",
+ "treatment": {
+  "arm": "paper loop, shared decision path",
+  "mismatched_orders": 0,
+  "backtest_orders": 1849
+ },
+ "control": {
+  "arm": "paper loop with a one-bar delay",
+  "mismatched_orders": 1849
+ },
+ "effect": {
+  "estimate": 1849,
+  "uncertainty": "none: exact count"
+ },
+ "verdict_rule": "supports if shared-path mismatches == 0 and control mismatches > 0",
+ "verdict": "supports",
+ "summary": "0 of 1849 orders differ on the shared path vs 1849 with a one-bar delay",
+ "quick": false,
+ "runtime_s": 2.34,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

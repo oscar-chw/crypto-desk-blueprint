@@ -1,0 +1,44 @@
+{
+ "id": "EXP-02-2",
+ "backs": "02-features rule 3",
+ "claim": "level-on-level regression rejects far above 5%",
+ "script": "experiments/EXP-02-2-spurious-regression.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "independent Gaussian random walks, 500 steps"
+ },
+ "inputs": {
+  "pairs": 1000,
+  "steps": 500,
+  "test": "two-sided t, 5%",
+  "t_crit": 1.9647
+ },
+ "seeds": [
+  5
+ ],
+ "metric": "rejection rate of slope = 0 at nominal 5%",
+ "treatment": {
+  "arm": "levels on levels",
+  "rejection_rate": 0.875,
+  "se": 0.010458
+ },
+ "control": {
+  "arm": "returns on returns",
+  "rejection_rate": 0.043,
+  "se": 0.006415
+ },
+ "effect": {
+  "estimate": 0.832,
+  "se": 0.012269
+ },
+ "verdict_rule": "supports if levels rate > 5% + 2 SE and returns rate within 2 SE of 5%",
+ "verdict": "supports",
+ "summary": "levels reject 87.5% (SE 1.0%) of independent pairs; returns reject 4.3% (SE 0.6%)",
+ "quick": false,
+ "runtime_s": 0.06,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

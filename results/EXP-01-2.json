@@ -1,0 +1,46 @@
+{
+ "id": "EXP-01-2",
+ "backs": "01-data rule 4",
+ "claim": "forward-filled outage biases volatility down",
+ "script": "experiments/EXP-01-2-forward-fill.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "hourly GBM, sigma 1% per hour, one 6-hour outage per 7-day window"
+ },
+ "inputs": {
+  "paths": 1000,
+  "hours": 168,
+  "outage_hours": 6,
+  "sigma_per_hour": 0.01,
+  "estimator": "sample std (ddof=1) of hourly log returns"
+ },
+ "seeds": [
+  3
+ ],
+ "metric": "relative bias of realised vol vs true sigma",
+ "treatment": {
+  "arm": "forward-filled outage",
+  "rel_bias": -0.003314,
+  "se": 0.001891
+ },
+ "control": {
+  "arm": "gap kept missing",
+  "rel_bias": -0.001845,
+  "se": 0.001711
+ },
+ "effect": {
+  "estimate": -0.001469,
+  "se": 0.000833,
+  "what": "paired difference, forward-fill minus gap-aware"
+ },
+ "verdict_rule": "supports if ffill bias < -2 SE and ffill minus gap-aware < -2 SE (paired)",
+ "verdict": "does not support",
+ "summary": "forward-fill bias -0.33% (SE 0.19%) vs gap-aware -0.18% (SE 0.17%); paired difference -0.15% (SE 0.08%)",
+ "quick": false,
+ "runtime_s": 0.14,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

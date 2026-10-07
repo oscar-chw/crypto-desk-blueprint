@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 dependencies = ["numpy>=1.26", "pandas>=2.1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.5"]
+dev = ["pytest>=8", "ruff>=0.5", "scikit-learn>=1.4", "matplotlib>=3.8"]
 
 [tool.setuptools.packages.find]
 include = ["pipeline*"]
@@ -31,6 +31,7 @@ markers = [
     "validation: stage 08 conformance",
     "mutation: proves each conformance test can fail",
     "blocks: unit tests of the shared building blocks",
+    "experiments: every evidence experiment in quick mode (same code path, small n)",
 ]
 
 [tool.ruff]

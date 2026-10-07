@@ -1,0 +1,47 @@
+{
+ "id": "EXP-02-1",
+ "backs": "02-features rule 1",
+ "claim": "a leaked feature shows skill on pure noise",
+ "script": "experiments/EXP-02-1-leaked-feature.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "Gaussian random walk of log price, sigma 1% per bar"
+ },
+ "inputs": {
+  "paths": 200,
+  "bars": 2000,
+  "window": 24,
+  "oos": "second half of each path"
+ },
+ "seeds": [
+  4
+ ],
+ "metric": "Spearman IC with the next-bar return",
+ "treatment": {
+  "arm": "centred (leaked) window",
+  "ic": 0.191146,
+  "se": 0.002149
+ },
+ "control": {
+  "arm": "trailing (point-in-time) window",
+  "ic": -0.008515,
+  "se": 0.002368,
+  "diagnostic_uncentred_pearson": -0.002598,
+  "diagnostic_se": 0.002383
+ },
+ "effect": {
+  "estimate": 0.199661,
+  "se": 0.003198,
+  "blueprint_falsification_met": false
+ },
+ "verdict_rule": "supports if leaked IC > 2 SE above 0 and trailing IC within 2 SE of 0",
+ "verdict": "does not support",
+ "summary": "leaked IC 0.191 (SE 0.002) vs trailing IC -0.009 (SE 0.002) on pure noise; trailing IC outside 2 SE of 0 (uncentred -0.0026, SE 0.0024); the blueprint's own falsification condition (leaked IC within 2 SE of 0) is not met",
+ "quick": false,
+ "runtime_s": 0.22,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

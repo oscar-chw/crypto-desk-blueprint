@@ -1,0 +1,46 @@
+{
+ "id": "EXP-05-3",
+ "backs": "05-risk rule 7",
+ "claim": "dollar-neutral altcoin book keeps BTC beta",
+ "script": "experiments/EXP-05-3-beta-neutral.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "one-factor returns, beta 0.6..1.6, BTC and idiosyncratic vol 3%/day"
+ },
+ "inputs": {
+  "books": 500,
+  "coins": 10,
+  "betas": "0.6..1.6",
+  "estimation_days": 250,
+  "oos_days": 250
+ },
+ "seeds": [
+  53
+ ],
+ "metric": "|realised out-of-sample beta of the book to BTC|",
+ "treatment": {
+  "arm": "beta-neutral (estimated betas)",
+  "mean_abs_beta": 0.047975,
+  "se": 0.001714
+ },
+ "control": {
+  "arm": "dollar-neutral",
+  "mean_abs_beta": 0.173741,
+  "se": 0.005521
+ },
+ "effect": {
+  "estimate": 0.125767,
+  "se": 0.005835,
+  "what": "paired dollar-neutral minus beta-neutral |beta|"
+ },
+ "verdict_rule": "supports if mean |beta| dollar-neutral - beta-neutral > 2 SE",
+ "verdict": "supports",
+ "summary": "mean absolute BTC beta 0.174 dollar-neutral vs 0.048 beta-neutral (paired diff SE 0.006)",
+ "quick": false,
+ "runtime_s": 0.06,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

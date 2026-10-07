@@ -1,0 +1,221 @@
+{
+ "id": "EXP-07-1",
+ "backs": "07-execution rule 4",
+ "claim": "costs flip a small high-turnover edge negative",
+ "script": "experiments/EXP-07-1-costs-flip-sign.py",
+ "data": {
+  "kind": "synthetic+public",
+  "process": "N(0, 0.006^2) hourly returns with a planted signal of correlation 0.02 to the next return",
+  "files": [
+   "binance_hourly_2025.csv"
+  ],
+  "source_urls": [
+   "https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/1h/"
+  ]
+ },
+ "inputs": {
+  "synthetic_hours": 43800,
+  "btc_hours": 8759,
+  "rho": 0.02,
+  "costs_bps": [
+   0,
+   1,
+   2,
+   3,
+   5,
+   10,
+   15,
+   20
+  ]
+ },
+ "seeds": [
+  71
+ ],
+ "metric": "net Sharpe per hour vs cost per unit turnover",
+ "treatment": {
+  "arm": "costs 1..20 bps",
+  "synthetic": {
+   "by_cost_bps": {
+    "0": {
+     "sharpe_hourly": 0.001736,
+     "se": 0.004778,
+     "sharpe_annual": 0.162463
+    },
+    "1": {
+     "sharpe_hourly": -0.014846,
+     "se": 0.004779,
+     "sharpe_annual": -1.389487
+    },
+    "2": {
+     "sharpe_hourly": -0.031418,
+     "se": 0.004779,
+     "sharpe_annual": -2.940561
+    },
+    "3": {
+     "sharpe_hourly": -0.047967,
+     "se": 0.004781,
+     "sharpe_annual": -4.489477
+    },
+    "5": {
+     "sharpe_hourly": -0.080942,
+     "se": 0.004786,
+     "sharpe_annual": -7.575753
+    },
+    "10": {
+     "sharpe_hourly": -0.162047,
+     "se": 0.00481,
+     "sharpe_annual": -15.166802
+    },
+    "15": {
+     "sharpe_hourly": -0.240053,
+     "se": 0.004847,
+     "sharpe_annual": -22.467712
+    },
+    "20": {
+     "sharpe_hourly": -0.313717,
+     "se": 0.004894,
+     "sharpe_annual": -29.362269
+    }
+   },
+   "break_even_bps": 0.104681,
+   "mean_turnover": 0.997352,
+   "falls": true,
+   "first_negative_cost_bps": 1,
+   "hours": 43799,
+   "realised_position_ic": 0.001731,
+   "expected_position_ic": 0.015958
+  },
+  "btc_planted": {
+   "by_cost_bps": {
+    "0": {
+     "sharpe_hourly": 0.039312,
+     "se": 0.010689,
+     "sharpe_annual": 3.679387
+    },
+    "1": {
+     "sharpe_hourly": 0.017838,
+     "se": 0.010686,
+     "sharpe_annual": 1.669537
+    },
+    "2": {
+     "sharpe_hourly": -0.003641,
+     "se": 0.010685,
+     "sharpe_annual": -0.340787
+    },
+    "3": {
+     "sharpe_hourly": -0.025097,
+     "se": 0.010687,
+     "sharpe_annual": -2.348908
+    },
+    "5": {
+     "sharpe_hourly": -0.067824,
+     "se": 0.010697,
+     "sharpe_annual": -6.347935
+    },
+    "10": {
+     "sharpe_hourly": -0.172307,
+     "se": 0.010764,
+     "sharpe_annual": -16.127039
+    },
+    "15": {
+     "sharpe_hourly": -0.27108,
+     "se": 0.010879,
+     "sharpe_annual": -25.371674
+    },
+    "20": {
+     "sharpe_hourly": -0.361905,
+     "se": 0.011029,
+     "sharpe_annual": -33.872427
+    }
+   },
+   "break_even_bps": 1.830441,
+   "mean_turnover": 1.018724,
+   "falls": true,
+   "first_negative_cost_bps": 2,
+   "hours": 8759
+  },
+  "btc_placeholder": {
+   "by_cost_bps": {
+    "0": {
+     "sharpe_hourly": -0.02291,
+     "se": 0.010686,
+     "sharpe_annual": -2.144299
+    },
+    "1": {
+     "sharpe_hourly": -0.02627,
+     "se": 0.010687,
+     "sharpe_annual": -2.458697
+    },
+    "2": {
+     "sharpe_hourly": -0.029629,
+     "se": 0.010687,
+     "sharpe_annual": -2.773082
+    },
+    "3": {
+     "sharpe_hourly": -0.032987,
+     "se": 0.010688,
+     "sharpe_annual": -3.087442
+    },
+    "5": {
+     "sharpe_hourly": -0.039703,
+     "se": 0.010689,
+     "sharpe_annual": -3.716037
+    },
+    "10": {
+     "sharpe_hourly": -0.05648,
+     "se": 0.010693,
+     "sharpe_annual": -5.286227
+    },
+    "15": {
+     "sharpe_hourly": -0.073224,
+     "se": 0.010699,
+     "sharpe_annual": -6.853345
+    },
+    "20": {
+     "sharpe_hourly": -0.089918,
+     "se": 0.010707,
+     "sharpe_annual": -8.415881
+    }
+   },
+   "break_even_bps": -6.822271,
+   "mean_turnover": 0.075351,
+   "falls": true,
+   "first_negative_cost_bps": 0,
+   "hours": 8759
+  }
+ },
+ "control": {
+  "arm": "zero cost",
+  "synthetic": {
+   "sharpe_hourly": 0.001736,
+   "se": 0.004778,
+   "sharpe_annual": 0.162463
+  },
+  "btc_planted": {
+   "sharpe_hourly": 0.039312,
+   "se": 0.010689,
+   "sharpe_annual": 3.679387
+  },
+  "btc_placeholder": {
+   "sharpe_hourly": -0.02291,
+   "se": 0.010686,
+   "sharpe_annual": -2.144299
+  }
+ },
+ "effect": {
+  "estimate": 0.104681,
+  "what": "break-even cost, synthetic arm (bps per unit turnover)",
+  "se": 0.288161,
+  "se_note": "delta-method: break-even scales with the gross Sharpe"
+ },
+ "verdict_rule": "supports if net Sharpe strictly falls with cost in every arm, and the synthetic arm's zero-cost Sharpe > 2 SE and turns negative at some cost <= 20 bps",
+ "verdict": "does not support",
+ "summary": "synthetic edge: annual Sharpe 0.16 (SE 0.45) at 0 bp (realised position IC 0.0017 vs 0.0160 expected), break-even 0.10 bp, -7.58 at 5 bp; BTC planted edge break-even 1.83 bp; toy placeholder on BTC -2.14 gross, -5.29 at 10 bp",
+ "quick": false,
+ "runtime_s": 0.01,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

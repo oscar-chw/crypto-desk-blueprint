@@ -1,0 +1,195 @@
+{
+ "id": "EXP-04-2",
+ "backs": "04-pricing rule 4",
+ "claim": "continuous funding accrual misstates short holds",
+ "script": "experiments/EXP-04-2-discrete-funding.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "AR(1) funding rate per 8 h interval, mean 1 bp, phi 0.9, innovation sd 0.5 bp"
+ },
+ "inputs": {
+  "holds_per_length": 20000,
+  "lengths_h": "1..24",
+  "interval_h": 8,
+  "rate_ar1": {
+   "mean": 0.0001,
+   "phi": 0.9,
+   "sd": 5e-05
+  },
+  "negligible_rel_error": 0.1
+ },
+ "seeds": [
+  42
+ ],
+ "metric": "mean |continuous - discrete| funding P&L, bps of notional",
+ "treatment": {
+  "arm": "continuous accrual",
+  "by_hold_hours": {
+   "1": {
+    "mae_bps": 0.262686,
+    "se": 0.00292,
+    "mean_abs_accrual_bps": 0.14941,
+    "rel_error": 1.758153
+   },
+   "2": {
+    "mae_bps": 0.451557,
+    "se": 0.003257,
+    "mean_abs_accrual_bps": 0.298625,
+    "rel_error": 1.512118
+   },
+   "3": {
+    "mae_bps": 0.571785,
+    "se": 0.003178,
+    "mean_abs_accrual_bps": 0.451163,
+    "rel_error": 1.267357
+   },
+   "4": {
+    "mae_bps": 0.615576,
+    "se": 0.003104,
+    "mean_abs_accrual_bps": 0.597839,
+    "rel_error": 1.029669
+   },
+   "5": {
+    "mae_bps": 0.591576,
+    "se": 0.003175,
+    "mean_abs_accrual_bps": 0.750302,
+    "rel_error": 0.788451
+   },
+   "6": {
+    "mae_bps": 0.502602,
+    "se": 0.003306,
+    "mean_abs_accrual_bps": 0.896558,
+    "rel_error": 0.56059
+   },
+   "7": {
+    "mae_bps": 0.356873,
+    "se": 0.002993,
+    "mean_abs_accrual_bps": 1.042804,
+    "rel_error": 0.342224
+   },
+   "8": {
+    "mae_bps": 0.204793,
+    "se": 0.001515,
+    "mean_abs_accrual_bps": 1.188321,
+    "rel_error": 0.172338
+   },
+   "9": {
+    "mae_bps": 0.361878,
+    "se": 0.002999,
+    "mean_abs_accrual_bps": 1.336955,
+    "rel_error": 0.270673
+   },
+   "10": {
+    "mae_bps": 0.504301,
+    "se": 0.003312,
+    "mean_abs_accrual_bps": 1.475457,
+    "rel_error": 0.341793
+   },
+   "11": {
+    "mae_bps": 0.606612,
+    "se": 0.003308,
+    "mean_abs_accrual_bps": 1.652348,
+    "rel_error": 0.367121
+   },
+   "12": {
+    "mae_bps": 0.645119,
+    "se": 0.0033,
+    "mean_abs_accrual_bps": 1.781948,
+    "rel_error": 0.36203
+   },
+   "13": {
+    "mae_bps": 0.617073,
+    "se": 0.003333,
+    "mean_abs_accrual_bps": 1.905149,
+    "rel_error": 0.323898
+   },
+   "14": {
+    "mae_bps": 0.54187,
+    "se": 0.003403,
+    "mean_abs_accrual_bps": 2.051154,
+    "rel_error": 0.264178
+   },
+   "15": {
+    "mae_bps": 0.420373,
+    "se": 0.0032,
+    "mean_abs_accrual_bps": 2.240557,
+    "rel_error": 0.18762
+   },
+   "16": {
+    "mae_bps": 0.286177,
+    "se": 0.002091,
+    "mean_abs_accrual_bps": 2.344752,
+    "rel_error": 0.12205
+   },
+   "17": {
+    "mae_bps": 0.426079,
+    "se": 0.003207,
+    "mean_abs_accrual_bps": 2.497042,
+    "rel_error": 0.170633
+   },
+   "18": {
+    "mae_bps": 0.545377,
+    "se": 0.003466,
+    "mean_abs_accrual_bps": 2.64634,
+    "rel_error": 0.206087
+   },
+   "19": {
+    "mae_bps": 0.636445,
+    "se": 0.003484,
+    "mean_abs_accrual_bps": 2.805502,
+    "rel_error": 0.226856
+   },
+   "20": {
+    "mae_bps": 0.667788,
+    "se": 0.003431,
+    "mean_abs_accrual_bps": 2.958323,
+    "rel_error": 0.225732
+   },
+   "21": {
+    "mae_bps": 0.638103,
+    "se": 0.003456,
+    "mean_abs_accrual_bps": 3.059407,
+    "rel_error": 0.208571
+   },
+   "22": {
+    "mae_bps": 0.575144,
+    "se": 0.003559,
+    "mean_abs_accrual_bps": 3.201052,
+    "rel_error": 0.179674
+   },
+   "23": {
+    "mae_bps": 0.472824,
+    "se": 0.003408,
+    "mean_abs_accrual_bps": 3.346108,
+    "rel_error": 0.141306
+   },
+   "24": {
+    "mae_bps": 0.343866,
+    "se": 0.002546,
+    "mean_abs_accrual_bps": 3.488285,
+    "rel_error": 0.098577
+   }
+  }
+ },
+ "control": {
+  "arm": "discrete payments at funding times",
+  "mean_abs_payment_bps": 1.201869
+ },
+ "effect": {
+  "estimate": 0.615576,
+  "se": 0.003104,
+  "what": "MAE at a 4-hour hold (bps)",
+  "peak_abs_error_hold_h": 20,
+  "peak_rel_error_hold_h": 1
+ },
+ "verdict_rule": "supports if relative error >= 10% at some holding length",
+ "verdict": "supports",
+ "summary": "continuous accrual is off by 0.62 bp (103% of the funding) on 4-hour holds vs 0.20 bp (17%) on 8-hour holds; relative error peaks at 1 h, absolute at 20 h",
+ "quick": false,
+ "runtime_s": 1.03,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

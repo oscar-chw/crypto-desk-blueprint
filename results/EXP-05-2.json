@@ -1,0 +1,59 @@
+{
+ "id": "EXP-05-2",
+ "backs": "05-risk rules 4-6",
+ "claim": "loss halt and drawdown budget cut the worst outcomes",
+ "script": "experiments/EXP-05-2-loss-limits.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "GARCH(1,1)-t(4) 4-hour returns with a 30-day -1%/day regime; U(0,1) target weights"
+ },
+ "inputs": {
+  "paths": 1000,
+  "days": 365,
+  "bar_hours": 4,
+  "limits": {
+   "max_weight": 1.0,
+   "max_gross": 1.0,
+   "max_drawdown": 0.2,
+   "daily_loss_limit": 0.05
+  },
+  "regime": "30 days at -1%/day, random start"
+ },
+ "seeds": [
+  52
+ ],
+ "metric": "99th percentile max drawdown; median terminal wealth (start 1.0)",
+ "treatment": {
+  "arm": "RiskEngine: 5% daily halt + 20% drawdown kill switch",
+  "max_dd_p99": 0.252881,
+  "se": 0.011655,
+  "median_terminal": 0.878615,
+  "median_terminal_se": 0.003871,
+  "share_paths_killed": 0.963,
+  "share_bars_halted": 0.634938
+ },
+ "control": {
+  "arm": "no limits",
+  "max_dd_p99": 0.698897,
+  "se": 0.01626,
+  "median_terminal": 0.796726,
+  "median_terminal_se": 0.00914
+ },
+ "effect": {
+  "estimate": -0.446015,
+  "se": 0.017997,
+  "what": "p99 max drawdown, limits minus none",
+  "median_terminal_diff": 0.081889,
+  "median_terminal_diff_se": 0.008616
+ },
+ "verdict_rule": "supports if p99 drawdown (limits) - p99 drawdown (none) < -2 SE (paired bootstrap)",
+ "verdict": "supports",
+ "summary": "p99 max drawdown 25% with limits vs 70% without (diff SE 1.8%); median terminal wealth 0.879 vs 0.797 (diff +0.082, SE 0.009); kill switch tripped on 96% of paths",
+ "quick": false,
+ "runtime_s": 9.89,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

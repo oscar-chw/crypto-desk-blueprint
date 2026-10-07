@@ -1,0 +1,80 @@
+{
+ "id": "EXP-00-2",
+ "backs": "00-infrastructure rules 1, 3",
+ "claim": "receive-time stamping misassigns trades to bars",
+ "script": "experiments/EXP-00-2-receive-time.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "Poisson trades 5/s, 1 bp log random walk, lognormal delay median 50 ms"
+ },
+ "inputs": {
+  "trades": 107764,
+  "seconds": 21600,
+  "rate_per_s": 5.0,
+  "bar_s": 60,
+  "delay_median_ms": 50,
+  "delay_log_sigmas": [
+   0.5,
+   1.0,
+   1.5,
+   2.0
+  ]
+ },
+ "seeds": [
+  2
+ ],
+ "metric": "share of trades assigned to a different bar; |close diff| in bps",
+ "treatment": {
+  "arm": "receive-time bars",
+  "by_delay_log_sigma": {
+   "0.5": {
+    "misassigned_share": 0.001253,
+    "se": 0.000108,
+    "mean_delay_ms": 56.851319,
+    "close_abs_diff_bps": 0.299568,
+    "close_abs_diff_se": 0.029863
+   },
+   "1.0": {
+    "misassigned_share": 0.001707,
+    "se": 0.000126,
+    "mean_delay_ms": 82.978442,
+    "close_abs_diff_bps": 0.381117,
+    "close_abs_diff_se": 0.035257
+   },
+   "1.5": {
+    "misassigned_share": 0.003025,
+    "se": 0.000167,
+    "mean_delay_ms": 155.903771,
+    "close_abs_diff_bps": 0.540797,
+    "close_abs_diff_se": 0.04669
+   },
+   "2.0": {
+    "misassigned_share": 0.006533,
+    "se": 0.000245,
+    "mean_delay_ms": 380.492216,
+    "close_abs_diff_bps": 0.687684,
+    "close_abs_diff_se": 0.059149
+   }
+  }
+ },
+ "control": {
+  "arm": "exchange-time bars",
+  "misassigned_share": 0.0,
+  "close_abs_diff_bps": 0.0
+ },
+ "effect": {
+  "estimate": 0.001707,
+  "se": 0.000126,
+  "at": "log-sigma 1.0"
+ },
+ "verdict_rule": "supports if misassignment at log-sigma 1.0 > 2 SE above 0 and rises with log-sigma",
+ "verdict": "supports",
+ "summary": "0.17% (SE 0.01%) of trades land in the wrong 1-min bar at median 50 ms delay, 0.65% with the heaviest tail; bar closes move 0.38 bp on average",
+ "quick": false,
+ "runtime_s": 0.04,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

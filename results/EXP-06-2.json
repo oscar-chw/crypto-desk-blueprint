@@ -1,0 +1,51 @@
+{
+ "id": "EXP-06-2",
+ "backs": "06-portfolio rules 4, 5",
+ "claim": "Black-Litterman weights are stable under noisy views",
+ "script": "experiments/EXP-06-2-black-litterman.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "10 assets, one-factor covariance, true means = equilibrium, views = truth + N(0, 0.1^2)"
+ },
+ "inputs": {
+  "assets": 10,
+  "rebalances": 500,
+  "delta": 2.5,
+  "tau": 0.05,
+  "view_noise_sd": 0.1,
+  "normalisation": "gross 1"
+ },
+ "seeds": [
+  62
+ ],
+ "metric": "mean L1 distance between successive weights; mean max |weight|",
+ "treatment": {
+  "arm": "Black-Litterman",
+  "turnover_l1": 0.825259,
+  "se": 0.008222,
+  "max_abs_weight": 0.272864,
+  "l1_to_market": 0.632679
+ },
+ "control": {
+  "arm": "mean-variance",
+  "turnover_l1": 1.125799,
+  "se": 0.011068,
+  "max_abs_weight": 0.255487,
+  "l1_to_market": 0.987883
+ },
+ "effect": {
+  "estimate": -0.300541,
+  "se": 0.004904,
+  "what": "paired BL minus MV turnover (L1)"
+ },
+ "verdict_rule": "supports if BL turnover - MV turnover < -2 SE (paired)",
+ "verdict": "supports",
+ "summary": "turnover per rebalance 0.83 (BL) vs 1.13 (MV) in L1 at gross 1; largest weight 0.27 vs 0.26",
+ "quick": false,
+ "runtime_s": 0.0,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

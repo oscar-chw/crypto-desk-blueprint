@@ -1,0 +1,73 @@
+{
+ "id": "EXP-08-2",
+ "backs": "08-validation rules 3, 4",
+ "claim": "best of N noise strategies passes raw Sharpe, fails deflated",
+ "script": "experiments/EXP-08-2-deflated-sharpe.py",
+ "data": {
+  "kind": "synthetic",
+  "process": "iid N(0, 0.01^2) daily returns, 250 days, no skill"
+ },
+ "inputs": {
+  "repeats": 1000,
+  "n_grid": [
+   1,
+   10,
+   100,
+   1000
+  ],
+  "days": 250,
+  "pass_threshold": 0.95
+ },
+ "seeds": [
+  82
+ ],
+ "metric": "share of repeats where the best strategy passes (false-pass rate)",
+ "treatment": {
+  "arm": "best of N > 1",
+  "10": {
+   "raw_false_pass": 0.406,
+   "raw_se": 0.015529,
+   "deflated_false_pass": 0.0,
+   "deflated_se": 0.0,
+   "mean_best_annual_sharpe": 1.888756
+  },
+  "100": {
+   "raw_false_pass": 0.99,
+   "raw_se": 0.003146,
+   "deflated_false_pass": 0.0,
+   "deflated_se": 0.0,
+   "mean_best_annual_sharpe": 3.042766
+  },
+  "1000": {
+   "raw_false_pass": 1.0,
+   "raw_se": 0.0,
+   "deflated_false_pass": 0.003,
+   "deflated_se": 0.001729,
+   "mean_best_annual_sharpe": 3.951603
+  }
+ },
+ "control": {
+  "arm": "N = 1",
+  "raw_false_pass": 0.048,
+  "raw_se": 0.00676,
+  "deflated_false_pass": 0.048,
+  "deflated_se": 0.00676,
+  "mean_best_annual_sharpe": 0.018212
+ },
+ "effect": {
+  "estimate": 0.952,
+  "se": 0.00676,
+  "what": "raw false-pass rate at N = 1000 minus N = 1",
+  "deflated_at_max_n": 0.003
+ },
+ "verdict_rule": "supports if raw false-pass rises with N (strictly, top vs N=1 > 2 SE) and deflated false-pass <= 5% + 2 SE at every N",
+ "verdict": "supports",
+ "summary": "raw PSR false-pass 5%, 41%, 99%, 100% for N = 1, 10, 100, 1000; deflated 4.8%, 0.0%, 0.0%, 0.3%",
+ "quick": false,
+ "runtime_s": 1.62,
+ "env": {
+  "python": "3.11.15",
+  "numpy": "2.4.6",
+  "pandas": "3.0.6"
+ }
+}

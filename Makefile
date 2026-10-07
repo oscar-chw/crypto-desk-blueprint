@@ -12,7 +12,7 @@ mutants:
 	$(PY) -m pytest conformance/test_mutants.py
 
 lint:
-	$(PY) -m ruff check --select E9,F pipeline conformance tests scripts
+	$(PY) -m ruff check --select E9,F pipeline conformance tests scripts experiments
 
 # make new-strategy name=my_momentum  (also new-data, new-feature, new-pricing, new-risk, new-portfolio,
 # new-execution, new-validation)
