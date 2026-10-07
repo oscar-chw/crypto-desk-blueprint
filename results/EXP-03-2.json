@@ -81,7 +81,7 @@
  "verdict": "does not support",
  "summary": "half-life error -0.6% at 5, -3.1% at 20, -7.0% at 50 (worst 8.8 SE), against a small-sample theory of -0.7%, -3.0%, -7.8%: the bias is the known AR(1) estimation bias; Engle-Granger size 5.2% (SE 0.7%), 14.7% with the plain ADF critical value",
  "quick": false,
- "runtime_s": 1.28,
+ "runtime_s": 1.23,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

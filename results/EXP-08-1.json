@@ -113,7 +113,7 @@
  "verdict": "supports",
  "summary": "accuracy on pure noise: plain shuffled k-fold 0.662 (SE 0.005), contiguous unpurged 0.497 (SE 0.008), purged + embargo 0.495 (SE 0.008). Shuffling creates the false skill; purging and embargo add no measurable benefit here (contiguous minus purged +0.001, SE 0.002)",
  "quick": false,
- "runtime_s": 18.01,
+ "runtime_s": 16.8,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

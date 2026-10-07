@@ -16,29 +16,29 @@
  "seeds": [
   4
  ],
- "metric": "Spearman IC with the next-bar return",
+ "metric": "uncentred correlation IC with the next-bar return",
  "treatment": {
   "arm": "centred (leaked) window",
-  "ic": 0.191146,
-  "se": 0.002149
+  "ic": 0.201826,
+  "se": 0.002078
  },
  "control": {
   "arm": "trailing (point-in-time) window",
-  "ic": -0.008515,
-  "se": 0.002368,
-  "diagnostic_uncentred_pearson": -0.002598,
-  "diagnostic_se": 0.002383
+  "ic": -0.002598,
+  "se": 0.002383,
+  "diagnostic_spearman_demeaned": -0.008515,
+  "diagnostic_se": 0.002368
  },
  "effect": {
-  "estimate": 0.199661,
-  "se": 0.003198,
+  "estimate": 0.204423,
+  "se": 0.003162,
   "blueprint_falsification_met": false
  },
  "verdict_rule": "supports if leaked IC > 2 SE above 0 and trailing IC within 2 SE of 0",
- "verdict": "does not support",
- "summary": "leaked IC 0.191 (SE 0.002) vs trailing IC -0.009 (SE 0.002) on pure noise; trailing IC outside 2 SE of 0 (uncentred -0.0026, SE 0.0024); the blueprint's own falsification condition (leaked IC within 2 SE of 0) is not met",
+ "verdict": "supports",
+ "summary": "leaked IC 0.202 (SE 0.002) vs trailing IC -0.003 (SE 0.002) on pure noise; trailing IC within 2 SE of 0 (demeaned Spearman -0.0085, SE 0.0024); the blueprint's own falsification condition (leaked IC within 2 SE of 0) is not met",
  "quick": false,
- "runtime_s": 0.22,
+ "runtime_s": 0.21,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

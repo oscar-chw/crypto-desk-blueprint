@@ -64,7 +64,7 @@
  "verdict": "supports",
  "summary": "raw PSR false-pass 5%, 41%, 99%, 100% for N = 1, 10, 100, 1000; deflated 4.8%, 0.0%, 0.0%, 0.3%",
  "quick": false,
- "runtime_s": 1.61,
+ "runtime_s": 1.62,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

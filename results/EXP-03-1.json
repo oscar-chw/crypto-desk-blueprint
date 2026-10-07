@@ -96,7 +96,7 @@
  "verdict": "does not support",
  "summary": "mixed: Kalman wins only after a break. Ratio RMSE with the break 0.037 Kalman vs 0.500 OLS; without it 0.022 vs 0.004 (diff SE 0.0005). Without a break the Kalman spread's lag-1 autocorrelation is 0.56 vs 0.89 for OLS (true noise 0.90): the filter absorbs part of the mean reversion",
  "quick": false,
- "runtime_s": 0.32,
+ "runtime_s": 0.31,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

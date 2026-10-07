@@ -15,7 +15,7 @@ files; none of it is typed by hand. Public data is a small committed extract che
 experiment runs offline.
 
 <!-- results:start -->
-15 of 20 experiments support their rule. Not supported: EXP-01-2, EXP-02-1, EXP-03-1, EXP-03-2, EXP-07-1.
+16 of 20 experiments support their rule. Not supported: EXP-01-2, EXP-03-1, EXP-03-2, EXP-07-1.
 
 | id | backs | claim under test | control | data | result | verdict |
 |---|---|---|---|---|---|---|
@@ -23,7 +23,7 @@ experiment runs offline.
 | [EXP-00-2](../experiments/EXP-00-2-receive-time.py) | [00](00-infrastructure.md) rules 1, 3 | receive-time stamping misassigns trades to bars | exchange-time bars | synthetic | 0.17% (SE 0.01%) of trades land in the wrong 1-min bar at median 50 ms delay, 0.65% with the heaviest tail; bar closes move 0.38 bp on average ([json](../results/EXP-00-2.json)) | supports |
 | [EXP-01-1](../experiments/EXP-01-1-survivorship.py) | [01](01-data.md) rule 5 | survivors-only universe inflates returns | point-in-time universe | synthetic | survivors-only 9.6 bp/day vs point-in-time -0.1 bp/day; bias 9.7 bp/day (SE 0.1), about 35% a year, with 58% of coins surviving ([json](../results/EXP-01-1.json)) | supports |
 | [EXP-01-2](../experiments/EXP-01-2-forward-fill.py) | [01](01-data.md) rule 4 | forward-filled outage biases volatility down | gap kept missing | synthetic | forward-fill bias -0.33% (SE 0.19%) vs gap-aware -0.18% (SE 0.17%); paired difference -0.15% (SE 0.08%) ([json](../results/EXP-01-2.json)) | **does not support** |
-| [EXP-02-1](../experiments/EXP-02-1-leaked-feature.py) | [02](02-features.md) rule 1 | a leaked feature shows skill on pure noise | trailing (point-in-time) window | synthetic | leaked IC 0.191 (SE 0.002) vs trailing IC -0.009 (SE 0.002) on pure noise; trailing IC outside 2 SE of 0 (uncentred -0.0026, SE 0.0024); the blueprint's own falsification condition (leaked IC within 2 SE of 0) is not met ([json](../results/EXP-02-1.json)) | **does not support** |
+| [EXP-02-1](../experiments/EXP-02-1-leaked-feature.py) | [02](02-features.md) rule 1 | a leaked feature shows skill on pure noise | trailing (point-in-time) window | synthetic | leaked IC 0.202 (SE 0.002) vs trailing IC -0.003 (SE 0.002) on pure noise; trailing IC within 2 SE of 0 (demeaned Spearman -0.0085, SE 0.0024); the blueprint's own falsification condition (leaked IC within 2 SE of 0) is not met ([json](../results/EXP-02-1.json)) | supports |
 | [EXP-02-2](../experiments/EXP-02-2-spurious-regression.py) | [02](02-features.md) rule 3 | level-on-level regression rejects far above 5% | returns on returns | synthetic | levels reject 87.5% (SE 1.0%) of independent pairs; returns reject 4.3% (SE 0.6%) ([json](../results/EXP-02-2.json)) | supports |
 | [EXP-02-3](../experiments/EXP-02-3-adf-power.py) | [02](02-features.md) rule 4 | ADF has low power near a unit root | phi 0.5 | synthetic | ADF power at phi 0.98: 13% at T = 250, 100% at T = 5000 (below 80% at T = 250, 500, 1000); phi 0.5: 100%; size at phi 1: 4.4% ([json](../results/EXP-02-3.json)) | supports |
 | [EXP-03-1](../experiments/EXP-03-1-kalman-hedge.py) | [03](03-strategy.md) rule 6 | Kalman hedge ratio tracks a regime shift | static OLS ratio (first half) | synthetic | mixed: Kalman wins only after a break. Ratio RMSE with the break 0.037 Kalman vs 0.500 OLS; without it 0.022 vs 0.004 (diff SE 0.0005). Without a break the Kalman spread's lag-1 autocorrelation is 0.56 vs 0.89 for OLS (true noise 0.90): the filter absorbs part of the mean reversion ([json](../results/EXP-03-1.json)) | **does not support** |
@@ -40,6 +40,8 @@ experiment runs offline.
 | [EXP-08-1](../experiments/EXP-08-1-purged-cv.py) | [08](08-validation.md) rule 1 | shuffled k-fold finds skill in noise; purged k-fold does not | purged k-fold + embargo | synthetic | accuracy on pure noise: plain shuffled k-fold 0.662 (SE 0.005), contiguous unpurged 0.497 (SE 0.008), purged + embargo 0.495 (SE 0.008). Shuffling creates the false skill; purging and embargo add no measurable benefit here (contiguous minus purged +0.001, SE 0.002) ([json](../results/EXP-08-1.json)) | supports |
 | [EXP-08-2](../experiments/EXP-08-2-deflated-sharpe.py) | [08](08-validation.md) rules 3, 4 | best of N noise strategies passes raw Sharpe, fails deflated | N = 1 | synthetic | raw PSR false-pass 5%, 41%, 99%, 100% for N = 1, 10, 100, 1000; deflated 4.8%, 0.0%, 0.0%, 0.3% ([json](../results/EXP-08-2.json)) | supports |
 <!-- results:end -->
+
+EXP-07-1 runs seed 71, the worst of the 200 seeds checked (its realised signal IC is at the 0% point of the 200-seed distribution). The seed was kept as originally set instead of swapped for a typical one, so the non-support stays visible and is not tuned away; read it as an unlucky draw, not the typical outcome.
 
 How to read a "does not support": the experiment ran as specified and the evidence went the other way
 or stayed inside noise. The rule may still be right for a reason the experiment does not test; the

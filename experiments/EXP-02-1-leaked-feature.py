@@ -6,10 +6,14 @@ Gaussian random walk with N(0, 0.01^2) steps, so the next return is unpredictabl
 Both features follow the stage-02 Feature protocol (name, lookback, compute(bars) -> Series):
   treatment (leaked): 24-bar mean log return in a centred window (pandas rolling(center=True)), which
   includes bars after t;  control (point-in-time): the trailing 24-bar mean log return.
-Metric: Spearman rank IC between the feature at t and the return from t to t+1, measured on the second
-half of each path (out of sample; nothing is fitted). Mean IC over paths with SE across paths. Diagnostic,
-not part of the verdict: the trailing feature's Pearson correlation without demeaning (both means are 0
-by construction), which removes the small-sample bias that demeaning an overlapping-window series adds.
+Metric: uncentred correlation IC = x.y / sqrt(x.x y.y) between the feature at t and the return from t to
+t+1, measured on the second half of each path (out of sample; nothing is fitted), the same estimator for
+both arms. Both series have mean 0 by construction, so no demeaning is needed. Mean IC over paths with SE
+across paths. Diagnostic, not part of the verdict: the Spearman rank IC, which demeans, so it carries the
+small-sample bias that demeaning an overlapping-window series adds (it made the trailing control look
+non-zero).
+Revision note: EXP-02-1's measurement was revised after review on 2026-10-08 because the original control
+was biased (see git history). The original metric was the Spearman IC for both arms; the threshold is unchanged.
 Verdict rule (from blueprint/02-features.md, stricter than its falsification condition): supports if the leaked IC exceeds 0 by
 more than 2 SE and the trailing IC is within 2 SE of 0. The blueprint's narrower falsification condition
 (leaked IC within 2 SE of 0) is reported beside it.
@@ -46,6 +50,13 @@ class MeanReturn:
 
 
 def ic(feature: pd.Series, fwd: pd.Series) -> float:
+    """Uncentred correlation; valid because both series have known mean 0 (no demeaning bias)."""
+    ok = feature.notna() & fwd.notna()
+    x, y = feature[ok].to_numpy(), fwd[ok].to_numpy()
+    return float(x @ y / np.sqrt((x @ x) * (y @ y)))
+
+
+def rank_ic(feature: pd.Series, fwd: pd.Series) -> float:
     ok = feature.notna() & fwd.notna()
     return float(feature[ok].rank().corr(fwd[ok].rank()))
 
@@ -60,31 +71,30 @@ def run(quick: bool) -> dict:
     feats = [MeanReturn(True), MeanReturn(False)]
     assert all(isinstance(f, Feature) for f in feats)
     ics = {f.name: [] for f in feats}
-    raw = []  # diagnostic: trailing feature vs next return without demeaning (both have known mean 0)
+    raw = []  # diagnostic: trailing feature's demeaned Spearman IC (the original, biased metric)
     for _ in range(n_paths):
         bars = pd.DataFrame({"close": 100 * np.exp(np.cumsum(rng.normal(0, 0.01, n)))})
         fwd = np.log(bars["close"]).diff().shift(-1)  # return from t to t+1
         oos = slice(n // 2, None)
         for f in feats:
             ics[f.name].append(ic(f.compute(bars).iloc[oos], fwd.iloc[oos]))
-        x, y = feats[1].compute(bars).iloc[oos].to_numpy()[:-1], fwd.iloc[oos].to_numpy()[:-1]
-        raw.append(float(x @ y / np.sqrt((x @ x) * (y @ y))))
+        raw.append(rank_ic(feats[1].compute(bars).iloc[oos], fwd.iloc[oos]))
     lk_m, lk_se = mean_se(ics["centred"])
     tr_m, tr_se = mean_se(ics["trailing"])
     ok = passes(lk_m, lk_se, tr_m, tr_se)
     falsified = lk_m <= 2 * lk_se  # the blueprint's falsification condition, reported beside the verdict
     return {
         "inputs": {"paths": n_paths, "bars": n, "window": WINDOW, "oos": "second half of each path"},
-        "seeds": [SEED], "metric": "Spearman IC with the next-bar return",
+        "seeds": [SEED], "metric": "uncentred correlation IC with the next-bar return",
         "treatment": {"arm": "centred (leaked) window", "ic": lk_m, "se": lk_se},
         "control": {"arm": "trailing (point-in-time) window", "ic": tr_m, "se": tr_se,
-                    "diagnostic_uncentred_pearson": mean_se(raw)[0], "diagnostic_se": mean_se(raw)[1]},
+                    "diagnostic_spearman_demeaned": mean_se(raw)[0], "diagnostic_se": mean_se(raw)[1]},
         "effect": {"estimate": lk_m - tr_m, "se": float(np.hypot(lk_se, tr_se)),
                    "blueprint_falsification_met": falsified},
         "verdict_rule": "supports if leaked IC > 2 SE above 0 and trailing IC within 2 SE of 0",
         "verdict": verdict(ok),
         "summary": (f"leaked IC {lk_m:.3f} (SE {lk_se:.3f}) vs trailing IC {tr_m:+.3f} (SE {tr_se:.3f}) on pure noise; "
-                    f"trailing IC {'within' if abs(tr_m) <= 2 * tr_se else 'outside'} 2 SE of 0 (uncentred "
+                    f"trailing IC {'within' if abs(tr_m) <= 2 * tr_se else 'outside'} 2 SE of 0 (demeaned Spearman "
                     f"{mean_se(raw)[0]:+.4f}, SE {mean_se(raw)[1]:.4f}); the blueprint's own falsification condition "
                     f"(leaked IC within 2 SE of 0) {'is' if falsified else 'is not'} met"),
     }

@@ -1,9 +1,10 @@
 # Crypto Desk Blueprint
 [![ci](https://github.com/oscar-chw/crypto-desk-blueprint/actions/workflows/ci.yml/badge.svg)](https://github.com/oscar-chw/crypto-desk-blueprint/actions/workflows/ci.yml) [![lint](https://github.com/oscar-chw/crypto-desk-blueprint/actions/workflows/lint.yml/badge.svg)](https://github.com/oscar-chw/crypto-desk-blueprint/actions/workflows/lint.yml) [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A template that a human or an AI agent follows to build a crypto trading desk from scratch: typed stage
-interfaces, tested building blocks, conformance tests that each have a caught mutant, a scaffold for new
-implementations, and short docs that say why each rule exists. Its worked example is a separate repo,
+A template for building a crypto trading system from scratch, whether you are a person or an AI agent. It
+gives you: a defined interface for each stage of the system, tested building blocks, acceptance tests that
+each have a deliberately broken version they must catch, a scaffold for adding new parts, and short docs
+that say why each rule exists. A real example built from it is a separate repo,
 [crypto-trading-pipeline](https://github.com/oscar-chw/crypto-trading-pipeline).
 
 Where in the code: contracts in [`pipeline/protocols.py`](pipeline/protocols.py), building blocks in
@@ -79,10 +80,10 @@ What is verified today, by command:
 in the same run, fixed seeds, a standard error and a falsification condition. The thresholds were committed together with
 the first results, so they are not a pre-registration.
 <!-- results:start -->
-15 of 20 experiments support their rule. Not supported: EXP-01-2, EXP-02-1, EXP-03-1, EXP-03-2, EXP-07-1. Experiments on public Binance data: EXP-04-1, EXP-05-1, EXP-07-1; the rest use synthetic data with a stated generating process. Full table: [blueprint/EVIDENCE.md](blueprint/EVIDENCE.md).
+16 of 20 experiments support their rule. Not supported: EXP-01-2, EXP-03-1, EXP-03-2, EXP-07-1. Experiments on public Binance data: EXP-04-1, EXP-05-1, EXP-07-1; the rest use synthetic data with a stated generating process. Full table: [blueprint/EVIDENCE.md](blueprint/EVIDENCE.md).
 <!-- results:end -->
 
-![Plain vs purged k-fold on pure noise](docs/figures/EXP-08-1.png)
+![Shuffled vs contiguous vs purged k-fold on pure noise: the false skill comes from shuffling](docs/figures/EXP-08-1.png)
 
 ![Full vs half Kelly drawdown distribution](docs/figures/EXP-06-1.png)
 
@@ -117,8 +118,8 @@ scripts/       new_stage.py scaffold, check.sh, demo.sh, run_experiments.py, fet
 - **Contracts as Protocols, not base classes.** Any object with the right methods conforms, so an
   implementation can wrap an existing library. The cost is that conformance is checked by tests, not by
   the type system alone.
-- **Conformance suite is the definition of done.** It cannot be edited in the same change as the code it
-  judges. This slows a quick fix and prevents the failure where the test is bent to fit the code.
+- **Conformance suite is the definition of done.** AGENTS.md instructs agents never to edit a test and
+  the code it judges in one change (a rule, not enforced by CI), and the conformance mutants prove the tests can fail. This slows a quick fix and targets the failure where the test is bent to fit the code.
 - **Mutants prove the tests can fail.** A test no mutant can fail proves nothing. The cost is one small file per
   mutant, which keeps the suite honest as it grows.
 - **Toy implementation for every stage.** A scaffolded stage is complete from minute one. The toy
@@ -133,6 +134,7 @@ scripts/       new_stage.py scaffold, check.sh, demo.sh, run_experiments.py, fet
   it claims under that process, not that the effect has the same size on a live market.
 - The public-data experiments use one year (2025) of Binance hourly data for two coins, plus BTC daily
   closes since 2018; the funding-basis band uses assumed borrow and lend rates.
+- EXP-02-1's measurement was revised after review on 2026-10-08 because the original control was biased (see git history).
 - Some experiments do not support their rule as specified; they are kept and named under Results.
 - The toy strategy is a placeholder; this repo makes no claim that any strategy makes money.
 - Only a paper venue exists; a live exchange adapter is not included.

@@ -186,7 +186,7 @@
  "verdict": "supports",
  "summary": "continuous accrual is off by 0.62 bp (103% of the funding) on 4-hour holds vs 0.20 bp (17%) on 8-hour holds; relative error peaks at 1 h, absolute at 20 h",
  "quick": false,
- "runtime_s": 1.0,
+ "runtime_s": 1.06,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

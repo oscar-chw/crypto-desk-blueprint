@@ -50,7 +50,7 @@
  "verdict": "supports",
  "summary": "p99 max drawdown 25% with limits vs 70% without (diff SE 1.8%); median terminal wealth 0.879 vs 0.797 (diff +0.082, SE 0.009); kill switch tripped on 96% of paths",
  "quick": false,
- "runtime_s": 9.67,
+ "runtime_s": 9.7,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",

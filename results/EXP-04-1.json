@@ -84,7 +84,7 @@
  "verdict": "supports",
  "summary": "aligned corr BTC 0.34 (SE 0.05), ETH 0.35 (SE 0.08) vs shifted 95th pct 0.17 / 0.14. Findings, not verdict: basis outside the assumed band in 9.3% / 9.0% of hours; 11% (SE 5%) / 11% of out-of-band days are top-decile BTC move days vs 10% by chance: no clustering in stress shown",
  "quick": false,
- "runtime_s": 0.21,
+ "runtime_s": 0.22,
  "env": {
   "python": "3.11.15",
   "numpy": "2.4.6",
