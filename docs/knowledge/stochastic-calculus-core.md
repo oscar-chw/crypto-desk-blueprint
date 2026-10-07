@@ -43,7 +43,7 @@ $\sigma^2/2\kappa$, half-life $\ln 2/\kappa$. Standard model for spreads and bas
 
 ## Checks this implies
 - Simulated GBM satisfies $E[S_T]=S_0e^{\mu T}$ and $E[\ln S_T]=\ln S_0+(\mu-\tfrac12\sigma^2)T$ within Monte Carlo error.
-- Sample quadratic variation of a simulated path converges to $\sigma^2T$ as step size shrinks.
+- Sample quadratic variation of a simulated $\ln S$ path converges to $\sigma^2T$ as step size shrinks.
 - Under simulated $\mathbb Q$ dynamics, the discounted asset price has constant mean (martingale test).
 - Monte Carlo price of a vanilla option matches the closed form within a few standard errors.
 - OU simulation recovers $\kappa$ and half-life from a fit within tolerance.

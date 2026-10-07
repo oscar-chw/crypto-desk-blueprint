@@ -28,8 +28,8 @@ an inflated Sharpe, corrected by the deflated Sharpe ratio (Bailey and López de
 high-cardinality features. MDA: drop in out-of-sample score when a feature is permuted. SFI: out-of-sample score of a
 model on one feature alone, which avoids substitution effects between correlated features.
 
-**Marchenko–Pastur (1967).** For $T\times N$ i.i.d. data with variance $\sigma^2$ and $q=N/T$, the eigenvalues of the sample
-correlation matrix fall in
+**Marchenko–Pastur (1967).** For $T\times N$ i.i.d. data with variance $\sigma^2$ and $q=N/T\le 1$, the eigenvalues of the sample
+covariance matrix fall in (for a correlation matrix, $\sigma^2=1$; for $q>1$ there is extra mass at zero)
 $$\lambda_\pm=\sigma^2\big(1\pm\sqrt q\big)^2,$$
 with density $\frac{\sqrt{(\lambda_+-\lambda)(\lambda-\lambda_-)}}{2\pi\sigma^2q\lambda}$. Eigenvalues above $\lambda_+$ carry signal;
 the rest are noise and may be replaced by their average (constant-residual denoising) (Laloux et al., 1999, "Noise dressing of

@@ -32,7 +32,8 @@ no arbitrage the call price must be decreasing and convex in strike, and calenda
 $w(k)=\sigma_{\rm imp}^2T$ at log-moneyness $k=\ln(K/F)$ is
 $$w(k)=a+b\left\{\rho(k-m)+\sqrt{(k-m)^2+s^2}\right\},\quad b\ge0,\ |\rho|<1,\ s>0.$$
 Wings are linear in $k$ (Lee, 2004, "The moment formula for implied volatility at extreme strikes"), and
-$b(1+|\rho|)\le 4/T$ is the usual condition for no moment explosion.
+Lee's moment formula bounds the wing slope of total variance: $b(1+|\rho|)\le 2$ is necessary for absence of static
+arbitrage in the wings; Gatheral and Jacquier (2014) use the weaker sufficient-style screen $b(1+|\rho|)\le 4$.
 
 **Variance swap** (Demeterfi, Derman, Kamal, Zou, 1999, "More than you ever wanted to know about volatility swaps"):
 assuming continuous prices without jumps, the fair strike is a log-contract replicated by options:
